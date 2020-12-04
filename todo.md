@@ -1,0 +1,6 @@
+- Notification system that works no matter offline or online
+- Able to delete task that’s done
+- Able to create new task
+- Able to edit old task
+- Able to read/get saved tasks
+- Save created task for future use

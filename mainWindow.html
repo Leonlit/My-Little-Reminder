@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>To-do app</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper">
+      <a class="brand-logo center">To-do List</a>   
+    </div>
+  </nav>
+  <div class="container">
+      <div>
+        <input type="text" id="item" autofocus placeholder="Enter the task name">
+        <input type="time" id="newTime">
+      </div>
+      <button class="waves-effect waves-light btn" onclick="makeNotification()">Add Task</button>
+  </div>
+  <ul></ul>
+
+  <script>
+    const electron = require('electron');
+    const {ipcRenderer} = electron;
+    const ul = document.querySelector('ul');
+
+    const task = []
+
+
+    function addNewTask () {
+      
+    }
+
+    function makeNotification () {
+      const title = document.querySelector('#item').value;
+      const time = document.querySelector('#newTime').value;
+      //console.log(time);
+      console.log(ipcRenderer);
+      ipcRenderer.send('item:add', title, time);
+    }
+  </script>
+</body>
+</html>
