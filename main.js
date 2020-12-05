@@ -1,16 +1,17 @@
 const electron = require('electron');
 const path = require('path');
 const url = require('url');
-const notifier = require('node-notifier');
-const schedule = require('node-schedule');
 const utilities = require("./utilities.js");
+const {DBManagement} = require("./dbManagement.js");
+const allTasks = []
 
 // SET ENV
 process.env.NODE_ENV = 'development';
 const {Task, Scheduler} = utilities;
 const {app, BrowserWindow, Menu, ipcMain, nativeImage, Tray} = electron;
+const DB = new DBManagement();
 let addWindow;
-let top = {};
+const top = {};
 app.on("ready", ev => {
 
   top.win = new BrowserWindow({
@@ -34,13 +35,13 @@ app.on("ready", ev => {
 
   top.tray = new Tray(nativeImage.createEmpty());
   const menu = Menu.buildFromTemplate([
-      {label: "Open to-do list", click: (item, window, event) => {
+      {label: "Open to-do App", click: (item, window, event) => {
           top.win.show();
       }},
       {type: "separator"},
       {role: "quit"}, 
   ]);
-  top.tray.setToolTip("Open to-do list");
+  top.tray.setToolTip("Open to-do App");
   top.tray.setContextMenu(menu);
   top.icons = new BrowserWindow({
       show: false, webPreferences: {offscreen: true}});
@@ -83,22 +84,10 @@ function createAddWindow(){
 // Catch item:add
 ipcMain.on('item:add', function(e, taskTitle, time){
   const task = new Task(taskTitle, time);
+  DB.insertTask(task);
   console.log(task)
-  // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
-  //addWindow = null;
-});
 
-async function scheduleTask (taskTitle,date) {
-  await schedule.scheduleJob(date, function(){
-    notifier.notify({
-      title: taskTitle,
-      message: "test",
-    },
-    function (err, response) {
-      console.log(err, response)
-    });
 });
-}
 
 
 // Create menu template

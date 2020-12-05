@@ -2,23 +2,37 @@
 <html>
 <head>
   <title>To-do app</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+  <link rel="stylesheet" href="./main.css"/>
 </head>
 <body>
-  <nav>
-    <div class="nav-wrapper">
-      <a class="brand-logo center">To-do List</a>   
+  <ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link" href="#">Clear Task</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link disabled" href="#">Source</a>
+    </li>
+  </ul>
+  <form class="container" onsubmit="makeNotification()">
+    <div class="form-group">
+        <div>
+          <input type="text" class="form-control" id="item" autofocus placeholder="Enter the task name" required />
+          <input type="time" class="addGap padding-n" id="newTime" required />
+        </div>
+        <input type="submit" value="Add Task" class="btn btn-success"/>
     </div>
-  </nav>
-  <div class="container">
-      <div>
-        <input type="text" id="item" autofocus placeholder="Enter the task name">
-        <input type="time" id="newTime">
-      </div>
-      <button class="waves-effect waves-light btn" onclick="makeNotification()">Add Task</button>
+  </form>
+  <div id="taskContainer">
+    <div class = "item">sad asds assadas ada </div>
+    <div class = "item">2asd asdas asdadsa sdad sdasd adsds dadsad a</div>
+    <div class = "item">asd asdsad adsad sada afasds dadsd a das</div>
+    <div class = "item">test dsadas dasdasasdsad sdasd asdsad asd sada sad ada da</div>
+    <div class = "item">sad asds assadas ada </div>
+    <div class = "item">2asd asdas asdadsa sdad sdasd adsds dadsad a</div>
+    <div class = "item">asd asdsad adsad sada afasds dadsd a das</div>
+    <div class = "item">test dsadas dasdasasdsad sdasd asdsad asd sada sad ada da</div>
   </div>
-  <ul></ul>
-
   <script>
     const electron = require('electron');
     const {ipcRenderer} = electron;

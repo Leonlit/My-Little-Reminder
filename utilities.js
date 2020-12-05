@@ -55,11 +55,11 @@ class Task{
         updateTimeStructure();
         scheduleTaskNotification();
     }
-
+    
+    //used when user decided to change the title
     changeTitle(newTitle) {
         this.#title = newTitle;
-        cancelScheduler();
-        scheduleTaskNotification();
+        resetScheduler();
     }
 
     resetScheduler () {
@@ -89,7 +89,7 @@ class Scheduler{
     }
 
     scheduleTaskNotification () {
-        const dateObj = this.convertTZ(new Date(), "Asia/Kuala_Lumpur");
+        const dateObj = new Date();
         const year = dateObj.getFullYear();
         const month = dateObj.getMonth();
         const day = dateObj.getDay() - 1;
@@ -107,9 +107,7 @@ class Scheduler{
         });
         console.log(this.#schedulerHandler);
     }
-    convertTZ(date, tzString) {
-        return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
-    }
+
 }
 
 module.exports = {Task, Scheduler}
