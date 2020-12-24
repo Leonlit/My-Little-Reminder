@@ -26,6 +26,7 @@ class Task{
     createNewSceduler () {
         this.#scheduler = null;
         this.#scheduler = new Scheduler(this.#title, this.#hour, this.#minutes, this.getTime());
+        console.log(this.#scheduler);
     }
 
     getTime () {
@@ -77,6 +78,7 @@ class Scheduler{
     #time
 
     constructor (newTitle, newHour, newMinutes, newTime) {
+        console.log("created a scheduler");
         this.#title = newTitle;
         this.#hour = newHour;
         this.#minutes = newMinutes;
@@ -92,20 +94,18 @@ class Scheduler{
         const dateObj = new Date();
         const year = dateObj.getFullYear();
         const month = dateObj.getMonth();
-        const day = dateObj.getDay() - 1;
+        const day = dateObj.getDate();
         const date = new Date(year, month, day, this.#hour, this.#minutes, 0);
+        console.log(year, month, day, this.#hour, this.#minutes, date);
         const title = this.#title
         const time = this.#time
-        this.#schedulerHandler = schedule.scheduleJob(date, function(){
+        this.#schedulerHandler = new schedule.scheduleJob(date, function(){
             notifier.notify({
-                title: "" + title,
-                message: "" + time,
-            },
-            function (err, response) {
-                console.log(err, response)
+                title: title,
+                message: time,
             });
         });
-        console.log(this.#schedulerHandler);
+        console.log(this.#schedulerHandler + " test");
     }
 
 }

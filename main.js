@@ -50,16 +50,12 @@ app.on("ready", ev => {
       if (top.tray) top.tray.setImage(image.resize({width: 16, height: 16}));
   });
 
-  // Build menu from template
   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
-  // Insert menu
   Menu.setApplicationMenu(mainMenu);
 });
+
 app.on("before-quit", ev => {
-    // BrowserWindow "close" event spawn after quit operation,
-    // it requires to clean up listeners for "close" event
     top.win.removeAllListeners("close");
-    // release windows
     top = null;
 });
 
