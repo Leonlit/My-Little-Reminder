@@ -1,4 +1,3 @@
-const { TouchBarSlider } = require('electron');
 const sqlite3 = require('sqlite3');
 
 class DBManagement {
@@ -15,7 +14,7 @@ class DBManagement {
         this.makeSureTableIsPresent();
     }
 
-    async makeSureTableIsPresent () {
+    makeSureTableIsPresent () {
         const query = `
             CREATE TABLE IF NOT EXISTS TASKS (
                 taskID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,11 +24,11 @@ class DBManagement {
             )
         `;
         try {
-            await this.#SQLiteObj.run(query, [], err=>{
+            this.#SQLiteObj.run(query, [], err=>{
                 if (err) {
                     console.log(`error when trying to make sure database table is present ${err}`);
                 }else {
-                    console.log("created table for database");
+                    console.log("table for database created or already exists");
                 }
             });
         } catch (error) {
@@ -37,16 +36,28 @@ class DBManagement {
         }
     }
 
-    getTask(taskID){
-        const query = `SELECt * FROM TASKS WHERE taskID=?`;
-        this.#SQLiteObj.run(query, [taskID], (err, row)=>  {
+    getSingleTask(taskID){
+        const query = `SELECT * FROM TASKS WHERE taskID=?`;
+        this.#SQLiteObj.get(query, [taskID,], (err, row)=>  {
             if (err) {
                 console.log(`Error occured when getting Task info for item ID ${taskID}, ${err}`);
+                return false;
             }else {
-                return row;
+                return row;     //returning single object
+            }
+        });
+    }
+
+    getAllTask (callback) {
+        const query = `SELECT * FROM TASKS`;
+        this.#SQLiteObj.all(query, (err, row)=>  {
+            if (err) {
+                console.log(`Error occured when retrieving all records from database`);
+                return callback(false);
+            }else {
+                return callback(row);     //returning arraay of objects
             }
         })
-        return false;
     }
 
     insertTask (taskObj) {

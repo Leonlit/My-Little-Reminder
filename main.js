@@ -7,9 +7,9 @@ const allTasks = []
 
 // SET ENV
 process.env.NODE_ENV = 'development';
-const {Task, Scheduler} = utilities;
+const {Task} = utilities;
 const {app, BrowserWindow, Menu, ipcMain, nativeImage, Tray} = electron;
-const DB = new DBManagement();
+let DB = new DBManagement();
 let addWindow;
 const top = {};
 app.on("ready", ev => {
@@ -35,13 +35,13 @@ app.on("ready", ev => {
 
   top.tray = new Tray(nativeImage.createEmpty());
   const menu = Menu.buildFromTemplate([
-      {label: "Open to-do App", click: (item, window, event) => {
+      {label: "Open My Little Reminder", click: (item, window, event) => {
           top.win.show();
       }},
       {type: "separator"},
       {role: "quit"}, 
   ]);
-  top.tray.setToolTip("Open to-do App");
+  top.tray.setToolTip("Open My Little Reminder");
   top.tray.setContextMenu(menu);
   top.icons = new BrowserWindow({
       show: false, webPreferences: {offscreen: true}});
@@ -81,8 +81,7 @@ function createAddWindow(){
 ipcMain.on('item:add', function(e, taskTitle, time){
   const task = new Task(taskTitle, time);
   DB.insertTask(task);
-  console.log(task)
-
+  allTasks.push(task);
 });
 
 
@@ -138,3 +137,11 @@ if(process.env.NODE_ENV !== 'production'){
     ]
   });
 }
+
+ipcMain.on("setupData", ()=>{
+  DB.getAllTask((data)=>{
+    console.log(data);
+    top.win.webContents.send('retrieveData', data);
+  });
+    
+});

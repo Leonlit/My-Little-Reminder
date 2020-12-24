@@ -33,25 +33,29 @@
     <div class = "item">asd asdsad adsad sada afasds dadsd a das</div>
     <div class = "item">test dsadas dasdasasdsad sdasd asdsad asd sada sad ada da</div>
   </div>
-  <script>
-    const electron = require('electron');
-    const {ipcRenderer} = electron;
-    const ul = document.querySelector('ul');
-
-    const task = []
-
-
-    function addNewTask () {
-      
-    }
-
-    function makeNotification () {
-      const title = document.querySelector('#item').value;
-      const time = document.querySelector('#newTime').value;
-      //console.log(time);
-      console.log(ipcRenderer);
-      ipcRenderer.send('item:add', title, time);
-    }
-  </script>
 </body>
 </html>
+
+<script>
+  const electron = require('electron');
+  const {ipcRenderer} = electron;
+  const ul = document.querySelector('ul');
+  ipcRenderer.send("setupData")
+  const task = []
+
+  ipcRenderer.on('retrieveData', function (event, scedules) {
+    console.log("test");
+    console.log(scedules);
+  });
+
+  function addNewTask () {
+    
+  }
+
+  function makeNotification () {
+    const title = document.querySelector('#item').value;
+    const time = document.querySelector('#newTime').value;
+    //console.log(time);
+    ipcRenderer.send('item:add', title, time);
+  }
+</script>

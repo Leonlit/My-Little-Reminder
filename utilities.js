@@ -34,7 +34,7 @@ class Task{
         if (this.getHour() < 12) {
             str = " AM"
         }
-        return this.#time + str;
+        return this.#time % 13 + str; // in 12-hour format
     }
 
     getTitle () {
@@ -48,13 +48,16 @@ class Task{
     getMinute() {
         return this.#minutes;
     }
+    
+    getScheduleState () {
+        return this.#scheduler.state;
+    }
 
     //change time to a new one
     changeTime(newTime) {
         this.#time = newTime;
-        cancelScheduler();
         updateTimeStructure();
-        scheduleTaskNotification();
+        resetScheduler();
     }
     
     //used when user decided to change the title
@@ -83,6 +86,7 @@ class Scheduler{
         this.#hour = newHour;
         this.#minutes = newMinutes;
         this.#time = newTime;
+        this.state = 0;
         this.scheduleTaskNotification();
     }
 
@@ -104,8 +108,9 @@ class Scheduler{
                 title: title,
                 message: time,
             });
+            this.state = 1;
         });
-        console.log(this.#schedulerHandler + " test");
+        console.log("created scheduler");
     }
 
 }
