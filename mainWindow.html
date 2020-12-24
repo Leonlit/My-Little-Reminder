@@ -39,17 +39,25 @@
 <script>
   const electron = require('electron');
   const {ipcRenderer} = electron;
-  const ul = document.querySelector('ul');
+  const container = document.querySelector('#taskContainer');
   ipcRenderer.send("setupData")
   const task = []
 
-  ipcRenderer.on('retrieveData', function (event, scedules) {
-    console.log("test");
-    console.log(scedules);
+  ipcRenderer.on('retrieveData', function (event, schedules) {
+    setupSchedules(schedules)
   });
 
   function addNewTask () {
     
+  }
+
+  function setupSchedules (schedules) {
+    schedules.forEach((row)=>{
+      const item = document.createElement("div");
+      item.classList = "item";
+      item.textContent = row.taskTitle;
+      container.appendChild(item);
+    })
   }
 
   function makeNotification () {
