@@ -3,7 +3,7 @@ const path = require('path');
 const url = require('url');
 const utilities = require("./utilities.js");
 const {DBManagement} = require("./dbManagement.js");
-const allTasks = []
+let allTasks = []
 
 // SET ENV
 process.env.NODE_ENV = 'development';
@@ -77,11 +77,13 @@ function createAddWindow(){
   });
 }
 
-// Catch item:add
-ipcMain.on('item:add', function(e, taskTitle, time){
-  const task = new Task(taskTitle, time);
-  DB.insertTask(task);
-  allTasks.push(task);
+// Catch addItem
+ipcMain.on('addItem', function(e, taskTitle, time){
+  DB.insertTask(taskTitle, time, (data) =>{
+    const task = new Task(data)
+    allTasks.push(task);
+    top.win.webContents.send('newItemAdded', data);
+  });
 });
 
 
@@ -140,8 +142,14 @@ if(process.env.NODE_ENV !== 'production'){
 
 ipcMain.on("setupData", ()=>{
   DB.getAllTask((data)=>{
-    console.log(data);
-    top.win.webContents.send('retrieveData', data);
+    let tasks = []
+    data.forEach((row) => {
+      const obj = new Task(row);
+      tasks.push(obj);
+      const time = row.taskTime;
+      row.taskTime = time.split(":");
+    });
+    allTasks = tasks;
+    top.win.webContents.send('setupSchedules', data);
   });
-    
 });

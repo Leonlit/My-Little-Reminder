@@ -60,14 +60,21 @@ class DBManagement {
         })
     }
 
-    insertTask (taskObj) {
+    insertTask (title, time, callback) {
         const query = `INSERT INTO TASKS (taskTitle, taskTime) VALUES (?, ?)`;
-        this.#SQLiteObj.run(query, [taskObj.getTitle(), taskObj.getTime()], err=> {
+        this.#SQLiteObj.run(query, [title, time], err=> {
             if (err) {
                 console.log(`could not insert task info into database, ${err}`);
             }else {
                 console.log("succesfully inserted task into database");
-                return true;
+                this.#SQLiteObj.get("SELECT LAST_INSERT_ROWID()",(err, ID)=>{
+                    if (err) {
+                        console.log(`could not get last inserted ID from DB, ${err}`);
+                    }else {
+                        console.log(ID);
+                        callback({taskDB_ID: ID["LAST_INSERT_ROWID()"], taskTitle: title, taskTime: time, taskStatus: 0});
+                    }
+                })
             }
             return false;
         })

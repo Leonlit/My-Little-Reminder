@@ -2,22 +2,25 @@ const notifier = require('node-notifier');
 const schedule = require('node-schedule');
 
 class Task{
+    #taskDB_ID
     #time
     #title
     #hour
     #minutes
     #scheduler
+    #status
 
-    constructor (title, time) {
-        this.#title = title
-        this.#time = time
+    constructor ( {taskDB_ID,  taskTitle, taskTime, taskStatus}) {
+        this.#taskDB_ID = taskDB_ID;
+        this.#title = taskTitle;
+        this.#time = taskTime;
+        this.#status = taskStatus;
         this.updateTimeStructure();
         this.createNewSceduler();
     }
 
     updateTimeStructure () {
         let splitting = this.#time;
-        console.log(this.#time);
         splitting = splitting.split(":");
         this.#hour = splitting[0]
         this.#minutes = splitting[1]
@@ -26,7 +29,6 @@ class Task{
     createNewSceduler () {
         this.#scheduler = null;
         this.#scheduler = new Scheduler(this.#title, this.#hour, this.#minutes, this.getTime());
-        console.log(this.#scheduler);
     }
 
     getTime () {
@@ -34,7 +36,8 @@ class Task{
         if (this.getHour() < 12) {
             str = " AM"
         }
-        return this.#time % 13 + str; // in 12-hour format
+        return `${this.getHour() % 13}:${this.getMinute()} ${str}`; 
+                // in 12-hour format
     }
 
     getTitle () {
@@ -51,6 +54,19 @@ class Task{
     
     getScheduleState () {
         return this.#scheduler.state;
+    }
+
+    getDB_ID () {
+        return this.#taskDB_ID;
+    }
+
+    getStatus () {
+        return this.#status;
+    }
+
+    // 1 - done, 0 - unfinished
+    setNewStatus (newStatus) {
+        this.#status = newStatus;
     }
 
     //change time to a new one
@@ -100,9 +116,9 @@ class Scheduler{
         const month = dateObj.getMonth();
         const day = dateObj.getDate();
         const date = new Date(year, month, day, this.#hour, this.#minutes, 0);
-        console.log(year, month, day, this.#hour, this.#minutes, date);
         const title = this.#title
         const time = this.#time
+        console.log(time);
         this.#schedulerHandler = new schedule.scheduleJob(date, function(){
             notifier.notify({
                 title: title,
