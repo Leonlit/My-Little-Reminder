@@ -143,14 +143,13 @@ if(process.env.NODE_ENV !== 'production'){
 
 ipcMain.on("setupData", ()=>{
   DB.getAllTask((data)=>{
-    let tasks = []
     data.forEach((row) => {
       const obj = new Task(row);
-      tasks.push(obj);
+      allTasks.push(obj); //here the time is in string
       const time = row.taskTime;
       row.taskTime = time.split(":");
     });
-    allTasks = tasks;
+    //while the objects inside the data, the time is in array form
     top.win.webContents.send('setupSchedules', data);
   });
 });
