@@ -24,14 +24,7 @@
     </div>
   </form>
   <div id="taskContainer">
-    <div class = "item">sad asds assadas ada </div>
-    <div class = "item">2asd asdas asdadsa sdad sdasd adsds dadsad a</div>
-    <div class = "item">asd asdsad adsad sada afasds dadsd a das</div>
-    <div class = "item">test dsadas dasdasasdsad sdasd asdsad asd sada sad ada da</div>
-    <div class = "item">sad asds assadas ada </div>
-    <div class = "item">2asd asdas asdadsa sdad sdasd adsds dadsad a</div>
-    <div class = "item">asd asdsad adsad sada afasds dadsd a das</div>
-    <div class = "item">test dsadas dasdasasdsad sdasd asdsad asd sada sad ada da</div>
+
   </div>
 </body>
 </html>
@@ -47,39 +40,52 @@
 
   //when the window is ready and a message is sent from server
   ipcRenderer.on('setupSchedules', function (event, schedules) {
-    allTasks = schedules;
     console.log(schedules);
+    allTasks = schedules;
     updateObjectPosition(allTasks);
     setupSchedules(schedules);
-  });
-
-  //when update needed to be performed
-  ipcRenderer.on('newItemAdded', function (event, schedules) {
-    console.log(schedules);
-    updateObjectPosition(allTasks)
-    updateSchedules(schedules)
   });
 
   //initial setup for the schedules
   function setupSchedules (schedules) {
     schedules.forEach((objRow, index)=>{
-      const item = document.createElement("div");
-      item.classList = "item";
-      item.setAttribute("id", index);
-      // time = objRow.taskTime.join(":");
-      // # format time first
-      item.textContent = objRow.taskTitle;
-      container.appendChild(item);
+      addItemToBody(objRow);
     })
   }
 
+  //when new item added
+  ipcRenderer.on('newItemAdded', function (event, schedules) {
+    console.log(schedules);
+    allTasks.push(schedules);
+    updateObjectPosition(allTasks);
+    addNewSchedules(schedules);
+  });
+
   //when a new schedule is added
-  function addNewSchedules (objRow, position) {
+  function addNewSchedules (obj) {
+    const position = getPositionForBiggerValue(obj, allTasks);
+    console.log(position);
+    addItemToBody(obj, position)
+  }
+
+  function addItemToBody (obj, position=null ) {
     const item = document.createElement("div");
+    const describ = document.createElement("p");
+    const time = getTime(obj.taskTime);
+    const timeHolder = document.createElement("span");
     item.classList = "item";
-    item.setAttribute(position);
-    item.textContent = objRow.taskTitle;
-    container.insertBefore(item, container.children[position]);
+    timeHolder.classList = "timeHolder";
+    item.setAttribute("id", obj.taskID);
+    describ.innerHTML = obj.taskTitle;
+    timeHolder.innerHTML = time;
+    item.appendChild(describ);
+    item.appendChild(timeHolder);
+    if (position === null) {
+      container.appendChild(item);
+    }else {
+      console.log("confirmed position " + (position + 1));
+      container.insertBefore(item, container.children[position + 1]);
+    }
   }
 
   //adding new item to database
@@ -97,10 +103,26 @@
   }
 
   function updateObjectPosition (taskArr) {
-    taskArr.sort(comparer)
+    taskArr.sort(compareObjectByTime)
   }
 
-  function comparer (obj, obj2) {
+  function getPositionForBiggerValue(obj, arr) {
+    let position;
+      for (let index = 0; index < arr.length;index++) {
+        const arrObj = arr[index];
+        const result = compareObjectByTime (obj, arrObj);
+        console.log(result);
+        console.log(obj.taskTime, arrObj.taskTime);
+        if (result == 1) {
+          console.log(index + " matched positon");
+          position = index;
+          break;
+        }
+      }
+    return position == undefined ? null: position ;
+  }
+
+  function compareObjectByTime (obj, obj2) {
     const obj_H = obj.taskTime[0];
     const obj2_H = obj2.taskTime[0];
     if ( obj_H < obj2_H){
@@ -111,13 +133,25 @@
       const obj2_M = obj2.taskTime[1];
       if (obj_M < obj2_M) {
         return -1
-      }else if (obj_M < obj2_M) {
-        return 1
       }else {
-        return 0;
+        return 1
       }
     }else {
       return 1;
     }
   }
+
+  function getTime (timeArr) {
+      console.log(timeArr)
+      let hour = timeArr[0];
+      const minute = timeArr[1];
+      let str = " PM"
+      if (hour < 12) {
+          str = " AM"
+      }
+      if (hour > 12) {
+        hour -=12;
+      }
+      return `${hour}:${minute} ${str}`;
+    }
 </script>

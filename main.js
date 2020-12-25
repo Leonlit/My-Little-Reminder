@@ -79,9 +79,10 @@ function createAddWindow(){
 
 // Catch addItem
 ipcMain.on('addItem', function(e, taskTitle, time){
-  DB.insertTask(taskTitle, time, (data) =>{
+  DB.insertTask(taskTitle, time, (data, timeArr) =>{
     const task = new Task(data)
     allTasks.push(task);
+    data.taskTime = timeArr;
     top.win.webContents.send('newItemAdded', data);
   });
 });
