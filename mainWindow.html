@@ -83,8 +83,8 @@
     if (position === null) {
       container.appendChild(item);
     }else {
-      console.log("confirmed position " + (position + 1));
-      container.insertBefore(item, container.children[position + 1]);
+      console.log("confirmed position " + (position));
+      container.insertBefore(item, container.children[position]);
     }
   }
 
@@ -113,9 +113,9 @@
         const result = compareObjectByTime (obj, arrObj);
         console.log(result);
         console.log(obj.taskTime, arrObj.taskTime);
-        if (result == 1) {
+        if (result == -1) {
           console.log(index + " matched positon");
-          position = index;
+          position = index - 1;
           break;
         }
       }
