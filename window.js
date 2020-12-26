@@ -33,7 +33,7 @@
     addItemToBody(obj, position)
   }
 
-  function addItemToBody (obj, position=null ) {
+  function addItemToBody (obj, position ) {
     const item = document.createElement("div");
     const title = document.createElement("div");
     const time = getTime(obj.taskTime);
@@ -47,8 +47,13 @@
     itemFooter.classList = "itemFooter";
     title.classList = "itemTitle"
 
-    deleteIcon.addEventListener("click", deleteTask(obj.taskID));
-    editIcon.addEventListener("click", editTask(obj))
+    deleteIcon.addEventListener("click", () => {
+      deleteTask(obj.taskID, position);
+    });
+
+    editIcon.addEventListener("click", ()=>{
+      editTask(obj, position)
+    });
 
     item.classList = "item";
     timeHolder.classList = "timeHolder";
@@ -69,9 +74,14 @@
     }
   }
 
-  function deleteTask (ID) {
-
+  function deleteTask (ID, position) {
+    console.log(ID, position);
+    ipcRenderer.send("deleteData", ID);
   }
+
+  ipcRenderer.on('deletedDataFromDB', (event, taskID) => {
+    document.getElementById(taskID).remove();
+  })
 
   function editTask (obj) {
 

@@ -2,19 +2,22 @@ const notifier = require('node-notifier');
 const schedule = require('node-schedule');
 
 class Task{
-    #taskDB_ID
+    #taskID
     #time
     #title
     #hour
     #minutes
     #scheduler
     #status
+    #date
 
-    constructor ( {taskDB_ID,  taskTitle, taskTime, taskStatus}) {
-        this.#taskDB_ID = taskDB_ID;
+    constructor ( {taskID,  taskTitle, taskTime, taskDate}) {
+        this.#taskID = taskID;
         this.#title = taskTitle;
         this.#time = taskTime;
-        this.#status = taskStatus;
+        this.#date = taskDate;
+        this.#status  = 0;
+        this.calculateStatus();
         this.updateTimeStructure();
         this.createNewSceduler();
     }
@@ -27,8 +30,9 @@ class Task{
     }
 
     createNewSceduler () {
+        if (this.#status) {return}
         this.#scheduler = null;
-        this.#scheduler = new Scheduler(this.#title, this.#hour, this.#minutes, this.getTime());
+        this.#scheduler = new Scheduler(this.getTitle(), this.#hour, this.#minutes, this.getTime());
     }
 
     getTime () {
@@ -57,16 +61,22 @@ class Task{
     }
 
     getDB_ID () {
-        return this.#taskDB_ID;
+        return this.#taskID;
     }
 
     getStatus () {
         return this.#status;
     }
 
-    // 1 - done, 0 - unfinished
-    setNewStatus (newStatus) {
-        this.#status = newStatus;
+    // 1 - done/expired, 0 - unfinished
+    calculateStatus () {
+        const date = new Date(this.#date).getDate();
+        const todayDate = new Date().getDate();
+        if (date < todayDate) {
+            this.#status = 1;
+        }
+
+        // calculate status 
     }
 
     //change time to a new one

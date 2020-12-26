@@ -20,7 +20,7 @@ class DBManagement {
                 taskID INTEGER PRIMARY KEY AUTOINCREMENT,
                 taskTitle TEXT NOT NULL,
                 taskTime TEXT NOT NULL,
-                taskStatus INTEGER DEFAULT 0
+                taskDate TEXT NOT NUll
             )
         `;
         try {
@@ -72,7 +72,7 @@ class DBManagement {
                         console.log(`could not get last inserted ID from DB, ${err}`);
                     }else {
                         const timeArr = time.split(":");
-                        callback({taskDB_ID: ID["LAST_INSERT_ROWID()"], taskTitle: title, taskTime: time, taskStatus: 0}, timeArr);
+                        callback({taskID: ID["LAST_INSERT_ROWID()"], taskTitle: title, taskTime: time, taskStatus: 0}, timeArr);
                     }
                 })
             }
@@ -93,14 +93,19 @@ class DBManagement {
         })
     }
 
-    deleteTask(taskID) {
-        const query = `DELETE FROM TASKS WHERE taskID=?)`;
-        this.#SQLiteObj.run(query, [taskID], err=> {
+    deleteTask(taskID, callback) {
+        const query = `DELETE FROM TASKS WHERE taskID=?`;
+        this.#SQLiteObj.run(query, [taskID], function (err) {
+            console.log(this.changes);
             if (err) {
                 console.log(`could not delete task from database, ${err}`);
-            }else {
+            }else if (this.changes == 1){
                 console.log("succesfully deleted task from database.");
+                console.log(this.changes);
+                callback();
                 return true;
+            }else {
+                console.log("The item does not exists.");
             }
             return false;
         })

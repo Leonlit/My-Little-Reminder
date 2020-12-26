@@ -3,12 +3,15 @@ const path = require('path');
 const url = require('url');
 const utilities = require("./utilities.js");
 const {DBManagement} = require("./dbManagement.js");
+
+const {Task} = utilities;
+const {app, BrowserWindow, Menu, ipcMain, nativeImage, Tray} = electron;
+
 let allTasks = []
 
 // SET ENV
 process.env.NODE_ENV = 'development';
-const {Task} = utilities;
-const {app, BrowserWindow, Menu, ipcMain, nativeImage, Tray} = electron;
+
 let DB = new DBManagement();
 let addWindow;
 const top = {};
@@ -78,11 +81,12 @@ function createAddWindow(){
 }
 
 // Catch addItem
-ipcMain.on('addItem', function(e, taskTitle, time){
+ipcMain.on('addItem', (e, taskTitle, time)=>{
   DB.insertTask(taskTitle, time, (data, timeArr) =>{
     const task = new Task(data)
     allTasks.push(task);
     data.taskTime = timeArr;
+    console.log(data)
     top.win.webContents.send('newItemAdded', data);
   });
 });
@@ -153,3 +157,10 @@ ipcMain.on("setupData", ()=>{
     top.win.webContents.send('setupSchedules', data);
   });
 });
+
+ipcMain.on("deleteData", (e, taskID)=>{
+  DB.deleteTask(taskID, ()=>{
+    console.log("deleted task with ID " + taskID);
+    top.win.webContents.send('deletedDataFromDB', taskID)
+  })
+})
