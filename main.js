@@ -1,3 +1,5 @@
+//this file is incharge of the initialization of the app backend
+
 const electron = require('electron');
 const path = require('path');
 const url = require('url');
@@ -80,18 +82,6 @@ function createAddWindow(){
   });
 }
 
-// Catch addItem
-ipcMain.on('addItem', (e, taskTitle, time)=>{
-  DB.insertTask(taskTitle, time, (data, timeArr) =>{
-    const task = new Task(data)
-    allTasks.push(task);
-    data.taskTime = timeArr;
-    console.log(data)
-    top.win.webContents.send('newItemAdded', data);
-  });
-});
-
-
 // Create menu template
 const mainMenuTemplate =  [
   // Each object is a dropdown
@@ -158,9 +148,21 @@ ipcMain.on("setupData", ()=>{
   });
 });
 
+// Catch addItem
+ipcMain.on('addItem', (e, taskTitle, time, date)=>{
+  DB.insertTask(taskTitle, time, date, (data, timeArr) =>{
+    const task = new Task(data)
+    allTasks.push(task);
+    data.taskTime = timeArr;
+    console.log(data)
+    top.win.webContents.send('newItemAdded', data);
+  });
+});
+
 ipcMain.on("deleteData", (e, taskID)=>{
   DB.deleteTask(taskID, ()=>{
     console.log("deleted task with ID " + taskID);
     top.win.webContents.send('deletedDataFromDB', taskID)
   })
 })
+

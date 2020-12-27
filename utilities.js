@@ -9,13 +9,11 @@ class Task{
     #minutes
     #scheduler
     #status
-    #date
 
-    constructor ( {taskID,  taskTitle, taskTime, taskDate}) {
+    constructor ( {taskID,  taskTitle, taskTime}) {
         this.#taskID = taskID;
         this.#title = taskTitle;
         this.#time = taskTime;
-        this.#date = taskDate;
         this.#status  = 0;
         this.calculateStatus();
         this.updateTimeStructure();
@@ -32,28 +30,16 @@ class Task{
     createNewSceduler () {
         if (this.#status) {return}
         this.#scheduler = null;
-        this.#scheduler = new Scheduler(this.getTitle(), this.#hour, this.#minutes, this.getTime());
+        this.#scheduler = new Scheduler(this.#title, this.#hour, this.#minutes, this.#time);
     }
 
     getTime () {
         let str = " PM"
-        if (this.getHour() < 12) {
+        if (this.#hour < 12) {
             str = " AM"
         }
-        return `${this.getHour() % 13}:${this.getMinute()} ${str}`; 
+        return `${this.#hour % 13}:${this.#minutes} ${str}`; 
                 // in 12-hour format
-    }
-
-    getTitle () {
-        return this.#title
-    }
-
-    getHour() {
-        return this.#hour;
-    }
-
-    getMinute() {
-        return this.#minutes;
     }
     
     getScheduleState () {
@@ -70,9 +56,12 @@ class Task{
 
     // 1 - done/expired, 0 - unfinished
     calculateStatus () {
-        const date = new Date(this.#date).getDate();
-        const todayDate = new Date().getDate();
-        if (date < todayDate) {
+        const dateObj = new Date();
+        const today_H = dateObj.getHours();
+        const today_M = dateObj.getMinutes()
+        console.log(currTime, todayTime);
+        if (this.today_H < today_H && this.#minutes < today_M) {
+            console.log("");
             this.#status = 1;
         }
 
@@ -136,7 +125,7 @@ class Scheduler{
             });
             this.state = 1;
         });
-        console.log("created scheduler");
+        console.log("created the scheduler...");
     }
 
 }

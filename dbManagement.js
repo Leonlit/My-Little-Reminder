@@ -60,9 +60,9 @@ class DBManagement {
         })
     }
 
-    insertTask (title, time, callback) {
-        const query = `INSERT INTO TASKS (taskTitle, taskTime) VALUES (?, ?)`;
-        this.#SQLiteObj.run(query, [title, time], err=> {
+    insertTask (title, time, date, callback) {
+        const query = `INSERT INTO TASKS (taskTitle, taskTime, taskDate) VALUES (?, ?, ?)`;
+        this.#SQLiteObj.run(query, [title, time, date], err=> {
             if (err) {
                 console.log(`could not insert task info into database, ${err}`);
             }else {
