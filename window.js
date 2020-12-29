@@ -101,6 +101,12 @@ function addNewTaskToStorage (event) {
   const title = document.querySelector('#titleInput').value;
   const time = document.querySelector('#timeInput').value;
   ipcRenderer.send('addItem', title, time, date);
+  clearformField();
+}
+
+function clearformField() {
+  document.querySelector('#titleInput').value="";
+  document.querySelector('#timeInput').value="";
 }
 
 function getDate(dateObj=null) {

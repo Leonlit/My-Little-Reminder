@@ -15,8 +15,8 @@ class Task{
         this.#title = taskTitle;
         this.#time = taskTime;
         this.#status  = 0;
-        this.calculateStatus();
         this.updateTimeStructure();
+        this.calculateStatus();
         this.createNewSceduler();
     }
 
@@ -28,7 +28,7 @@ class Task{
     }
 
     createNewSceduler () {
-        if (this.#status) {return}
+        if (!this.#status) {return}
         this.#scheduler = null;
         this.#scheduler = new Scheduler(this.#title, this.#hour, this.#minutes, this.#time);
     }
@@ -57,15 +57,12 @@ class Task{
     // 1 - done/expired, 0 - unfinished
     calculateStatus () {
         const dateObj = new Date();
-        const today_H = dateObj.getHours();
-        const today_M = dateObj.getMinutes()
-        console.log(currTime, todayTime);
-        if (this.today_H < today_H && this.#minutes < today_M) {
-            console.log("");
+        const current_H = dateObj.getHours();
+        const current_M = dateObj.getMinutes();
+        if (this.#hour >= current_H) {
+            if (this.#hour == current_H && this.#minutes < current_M) return
             this.#status = 1;
         }
-
-        // calculate status 
     }
 
     //change time to a new one
@@ -96,7 +93,6 @@ class Scheduler{
     #time
 
     constructor (newTitle, newHour, newMinutes, newTime) {
-        console.log("created a scheduler");
         this.#title = newTitle;
         this.#hour = newHour;
         this.#minutes = newMinutes;
