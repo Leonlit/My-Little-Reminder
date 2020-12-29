@@ -5,13 +5,12 @@ const path = require('path');
 const url = require('url');
 const utilities = require("./utilities.js");
 const {DBManagement} = require("./dbManagement.js");
-
 const {Task} = utilities;
 const {app, BrowserWindow, Menu, ipcMain, nativeImage, Tray} = electron;
-
+const iconURL = "./assets/logo_128.png";
 let allTasks = []
 
-// SET ENV
+// SET ENV development will enable the devs tools in app
 process.env.NODE_ENV = 'development';
 
 let DB = new DBManagement();
@@ -24,7 +23,8 @@ app.on("ready", ev => {
       webPreferences: {
           nodeIntegration: true,
           webSecurity: true,
-      },                  
+      },         
+      icon: iconURL
   });
   top.win.loadURL(url.format({
     pathname: path.join(__dirname, 'mainWindow.html'),
@@ -44,13 +44,13 @@ app.on("ready", ev => {
           top.win.show();
       }},
       {type: "separator"},
-      {role: "quit"}, 
+      {role: "quit"},
   ]);
   top.tray.setToolTip("Open My Little Reminder");
   top.tray.setContextMenu(menu);
   top.icons = new BrowserWindow({
       show: false, webPreferences: {offscreen: true}});
-  top.icons.loadURL("https://trends.google.com/trends/hottrends/visualize");
+  top.icons.loadURL("");
   top.icons.webContents.on("paint", (event, dirty, image) => {
       if (top.tray) top.tray.setImage(image.resize({width: 16, height: 16}));
   });
