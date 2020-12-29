@@ -49,16 +49,17 @@ app.on("ready", ev => {
   top.tray.setToolTip("Open My Little Reminder");
   top.tray.setContextMenu(menu);
   top.icons = new BrowserWindow({
-      show: false, webPreferences: {offscreen: true}});
-  top.icons.loadURL("");
+      show: false, 
+      webPreferences: {offscreen: true}
+  });
   top.icons.webContents.on("paint", (event, dirty, image) => {
-      if (top.tray) top.tray.setImage(image.resize({width: 16, height: 16}));
+      if (top.tray) top.tray.setImage("assets/logo_16.png");
   });
 
   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
   Menu.setApplicationMenu(mainMenu);
 });
-
+console.log(__dirname);
 app.on("before-quit", ev => {
     top.win.removeAllListeners("close");
     top = null;

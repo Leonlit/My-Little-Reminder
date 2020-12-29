@@ -36,6 +36,10 @@ class DBManagement {
         }
     }
 
+    clearpreviousDateTask () {
+        
+    }
+
     getSingleTask(taskID){
         const query = `SELECT * FROM TASKS WHERE taskID=?`;
         this.#SQLiteObj.get(query, [taskID,], (err, row)=>  {
