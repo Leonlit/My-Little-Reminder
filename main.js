@@ -52,6 +52,7 @@ app.on("ready", ev => {
       show: false, 
       webPreferences: {offscreen: true}
   });
+  top.icons.loadFile("assets/logo_16.png");
   top.icons.webContents.on("paint", (event, dirty, image) => {
       if (top.tray) top.tray.setImage("assets/logo_16.png");
   });
@@ -162,7 +163,6 @@ ipcMain.on('addItem', (e, taskTitle, time, date)=>{
 
 ipcMain.on("deleteData", (e, taskID)=>{
   DB.deleteTask(taskID, ()=>{
-    console.log("deleted task with ID " + taskID);
     top.win.webContents.send('deletedDataFromDB', taskID)
   })
 })

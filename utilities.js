@@ -32,15 +32,6 @@ class Task{
         this.#scheduler = null;
         this.#scheduler = new Scheduler(this.#title, this.#hour, this.#minutes, this.#time);
     }
-
-    getTime () {
-        let str = " PM"
-        if (this.#hour < 12) {
-            str = " AM"
-        }
-        return `${this.#hour % 13}:${this.#minutes} ${str}`; 
-                // in 12-hour format
-    }
     
     getScheduleState () {
         return this.#scheduler.state;

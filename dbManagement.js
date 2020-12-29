@@ -30,14 +30,29 @@ class DBManagement {
                 }else {
                     console.log("table for database created or already exists");
                 }
+                this.clearPreviousDateTask();
             });
         } catch (error) {
             console.log(error);
         }
     }
 
-    clearpreviousDateTask () {
-        
+    clearPreviousDateTask () {
+        const query = `DELETE FROM TASKS WHERE taskDate < Date("now")`;
+        this.#SQLiteObj.run(query, function(err) {
+            if (err) {
+                console.log(`Error occured when deleting task created on previous date.`);
+                return false;
+            }else {
+                if (this.changes > 0) {
+                    console.log(`Deleted ${this.changes} row(s)`);
+                    return
+                }else {
+                    console.log("No row is deleted");
+                }
+                
+            }
+        });
     }
 
     getSingleTask(taskID){

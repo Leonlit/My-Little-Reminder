@@ -119,7 +119,7 @@ function getDate(dateObj=null) {
   const yyyy = today.getFullYear();
 
   //the date object accept value of mm/dd/yyyy
-  return mm + '-' + dd + '-' + yyyy;
+  return yyyy + "-" + mm + "-" + dd;
 }
 
 function updateObjectPosition (taskArr) {
