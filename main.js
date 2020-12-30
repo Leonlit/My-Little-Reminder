@@ -1,5 +1,5 @@
 //this file is incharge of the initialization of the app backend
-
+const top = {};
 const electron = require('electron');
 const path = require('path');
 const url = require('url');
@@ -15,9 +15,8 @@ process.env.NODE_ENV = 'development';
 
 let DB = new DBManagement();
 let addWindow;
-const top = {};
-app.on("ready", ev => {
 
+app.on("ready", ev => {
   top.win = new BrowserWindow({
       width: 800, height: 600, center: true, minimizable: true, show: true,
       webPreferences: {
@@ -52,15 +51,14 @@ app.on("ready", ev => {
       show: false, 
       webPreferences: {offscreen: true}
   });
-  top.icons.loadFile("assets/logo_16.png");
+  top.icons.loadFile("");
   top.icons.webContents.on("paint", (event, dirty, image) => {
-      if (top.tray) top.tray.setImage("assets/logo_16.png");
+      if (top.tray) top.tray.setImage(iconURL);
   });
 
   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
   Menu.setApplicationMenu(mainMenu);
 });
-console.log(__dirname);
 app.on("before-quit", ev => {
     top.win.removeAllListeners("close");
     top = null;
@@ -103,7 +101,7 @@ const mainMenuTemplate =  [
         }
       },
       {
-        label: 'Quit',
+        label: 'Exit',
         accelerator:process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
         click(){
           app.quit();
@@ -140,7 +138,7 @@ if(process.env.NODE_ENV !== 'production'){
 ipcMain.on("setupData", ()=>{
   DB.getAllTask((data)=>{
     data.forEach((row) => {
-      const obj = new Task(row);
+      const obj = new Task(row, itemNotified);
       allTasks.push(obj); //here the time is in string
       const time = row.taskTime;
       row.taskTime = time.split(":");
@@ -153,17 +151,34 @@ ipcMain.on("setupData", ()=>{
 // Catch addItem
 ipcMain.on('addItem', (e, taskTitle, time, date)=>{
   DB.insertTask(taskTitle, time, date, (data, timeArr) =>{
-    const task = new Task(data)
+    const task = new Task(data, itemNotified);
     allTasks.push(task);
     data.taskTime = timeArr;
-    console.log(data)
     top.win.webContents.send('newItemAdded', data);
   });
 });
 
+function itemNotified(taskID){
+  changeTaskStatusToNotified(taskID)
+  top.win.webContents.send("notifiedTask", taskID);
+}
+
+function changeTaskStatusToNotified (taskID) {
+  const obj = getItemFromID(taskID);
+  obj.setTaskNotified();
+  console.log("status changed");
+}
+
 ipcMain.on("deleteData", (e, taskID)=>{
   DB.deleteTask(taskID, ()=>{
     top.win.webContents.send('deletedDataFromDB', taskID)
-  })
-})
+  });
+});
 
+function getItemFromID (taskID) {
+  let result;
+  allTasks.forEach(row=>{
+    if (row.getDB_ID() == taskID ) result = row;
+  })
+  return result;
+}

@@ -11,6 +11,9 @@ const container = document.querySelector('#taskContainer');
 ipcRenderer.send("setupData")
 let allTasks = []
 
+const titleInputField = document.querySelector('#titleInput');
+  const timeInputField = document.querySelector('#timeInput');
+
 //when the window is ready and a message is sent from server
 ipcRenderer.on('setupSchedules', function (event, schedules) {
   allTasks = schedules;
@@ -72,6 +75,8 @@ function addItemToBody (obj, position ) {
   item.appendChild(title);
   item.appendChild(itemFooter);
 
+  //if (obj.)
+
   if (position === null) {
     container.appendChild(item);
   }else {
@@ -86,7 +91,16 @@ function deleteTask (ID, position) {
 
 ipcRenderer.on('deletedDataFromDB', (event, taskID) => {
   document.getElementById(taskID).remove();
-})
+});
+
+ipcRenderer.on("notifiedTask", (event, taskID) => {
+  notifiedTask(taskID);
+});
+
+function notifiedTask (taskID) {
+  const element = document.getElementById(taskID);
+  element.style.backgroundColor = "grey";
+}
 
 function editTask (obj, position) {
   allTasks[position] = newTaskObject;
@@ -98,15 +112,13 @@ function editTask (obj, position) {
 function addNewTaskToStorage (event) {
   event.preventDefault();
   const date = getDate();
-  const title = document.querySelector('#titleInput').value;
-  const time = document.querySelector('#timeInput').value;
-  ipcRenderer.send('addItem', title, time, date);
-  clearformField();
+  ipcRenderer.send('addItem', titleInputField.value, timeInputField.value, date);
+  clearFormField();
 }
 
-function clearformField() {
-  document.querySelector('#titleInput').value="";
-  document.querySelector('#timeInput').value="";
+function clearFormField() {
+  titleInputField.value="";
+  timeInputField.value="";
 }
 
 function getDate(dateObj=null) {
@@ -115,10 +127,8 @@ function getDate(dateObj=null) {
     today = new Date (dateObj);
   }
   const dd = String(today.getDate()).padStart(2, '0');
-  const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
   const yyyy = today.getFullYear();
-
-  //the date object accept value of mm/dd/yyyy
   return yyyy + "-" + mm + "-" + dd;
 }
 
