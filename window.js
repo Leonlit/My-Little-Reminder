@@ -105,10 +105,70 @@ function notifiedTask (taskID) {
 }
 
 function editTask (obj, position) {
-  allTasks[position] = newTaskObject;
-  updateObjectPosition();
-  const element = container.childNodes[position];
+  const itemCont = document.getElementById(obj.taskID);
+  const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
+  const timeCont = itemCont.getElementsByTagName("span")[0];
+  console.log(itemCont, titleCont.textContent, timeCont.textContent);
+  enableTaskEditMode(obj, position, itemCont, titleCont, timeCont);
+  makeContEditable(titleCont, timeCont);
+  
+  //container.appendChild()
+  //allTasks[position] = newTaskObject;
+  //updateObjectPosition();
+  //const element = container.childNodes[position];
 }
+
+function makeContEditable (titleCont, timeCont) {
+  titleCont.contentEditable = "true";
+  timeCont.contentEditable = "true";
+}
+
+function makeContNotEditable (titleCont, timeCont) {
+  titleCont.contentEditable = "false";
+  timeCont.contentEditable = "false";
+}
+
+function enableTaskEditMode (obj, position, itemCont, titleCont, timeCont) {
+  const editIcon = itemCont.getElementsByClassName("editBtn")[0];
+  const delIcon = itemCont.getElementsByClassName("closeBtn")[0];
+  editIcon.classList.remove("fa-pencil");
+  editIcon.classList.add("fa-check");
+
+  const editClone = editIcon.cloneNode(true);
+  const delClone = delIcon.cloneNode(true);
+  editIcon.parentNode.replaceChild(editClone, editIcon);
+  delIcon.parentNode.replaceChild(delClone, delIcon);
+
+  editClone.addEventListener("click", ()=>{
+    document.getElementById(itemCont.id).remove();
+    ipcRenderer.send("updateItem", itemCont.id ,titleCont.textContent, timeCont.textContent);
+  })
+  delClone.addEventListener("click", ()=>{
+    disableTaskEditMode(obj, position, itemCont, titleCont, timeCont);
+  });
+}
+
+function disableTaskEditMode (obj, position, itemCont, titleCont, timeCont) {
+  console.log(titleCont, timeCont);
+  makeContNotEditable(titleCont, timeCont);
+  const editIcon = itemCont.getElementsByClassName("editBtn")[0];
+  const delIcon = itemCont.getElementsByClassName("closeBtn")[0];
+  editIcon.classList.remove("fa-check");
+  editIcon.classList.add("fa-pencil");
+
+  const editClone = editIcon.cloneNode(true);
+  const delClone = delIcon.cloneNode(true);
+  editIcon.parentNode.replaceChild(editClone, editIcon);
+  delIcon.parentNode.replaceChild(delClone, delIcon);
+
+  editClone.addEventListener("click", ()=>{
+    editTask(obj, position)
+  })
+  delClone.addEventListener("click", ()=>{
+    deleteTask(obj.taskID, position);
+  });
+}
+
 
 //adding new item to database
 function addNewTaskToStorage (event) {

@@ -59,7 +59,7 @@ class Task{
         const current_H = dateObj.getHours();
         const current_M = dateObj.getMinutes();
         if (this.#hour >= current_H) {
-            if (this.#hour == current_H && this.#minutes < current_M) return
+            if (this.#hour == current_H && this.#minutes <= current_M) return
             this.#status = 0;
         }
         console.log(this.#status);

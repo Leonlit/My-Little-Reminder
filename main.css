@@ -70,11 +70,11 @@
     text-shadow: 0px 0px 10px grey;
 }
 
-.fa-pencil {
+.editBtn{
     color:green;
 }
 
-.fa-close {
+.closeBtn {
     color: red;
 }
 

@@ -136,6 +136,7 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 ipcMain.on("setupData", ()=>{
+  allTasks = [];
   DB.getAllTask((data)=>{
     data.forEach((row) => {
       const obj = new Task(row, itemNotified);
@@ -192,3 +193,7 @@ function getItemFromID (taskID) {
   })
   return result;
 }
+
+ipcMain.on("updateItem", (e, taskID, newTitle, newTime)=>{
+  console.log(taskID, newTitle, newTime);
+})
