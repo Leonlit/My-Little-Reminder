@@ -143,10 +143,19 @@ ipcMain.on("setupData", ()=>{
       const time = row.taskTime;
       row.taskTime = time.split(":");
     });
+    data = insertStatusIntoObject(data, allTasks);
     //while the objects inside the data, the time is in array form
     top.win.webContents.send('setupSchedules', data);
   });
 });
+
+function insertStatusIntoObject (objArr, taskArr) {
+  objArr = objArr.slice();
+  taskArr.forEach((e, index) => {
+    objArr[index]["status"] = e.getStatus();
+  });
+  return objArr;
+}
 
 // Catch addItem
 ipcMain.on('addItem', (e, taskTitle, time, date)=>{
@@ -154,6 +163,7 @@ ipcMain.on('addItem', (e, taskTitle, time, date)=>{
     const task = new Task(data, itemNotified);
     allTasks.push(task);
     data.taskTime = timeArr;
+    data.status = task.getStatus();
     top.win.webContents.send('newItemAdded', data);
   });
 });

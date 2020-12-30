@@ -1,4 +1,3 @@
-const { ipcMain } = require('electron');
 const notifier = require('node-notifier');
 const schedule = require('node-schedule');
 

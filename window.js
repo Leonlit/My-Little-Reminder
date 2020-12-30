@@ -18,6 +18,7 @@ const titleInputField = document.querySelector('#titleInput');
 ipcRenderer.on('setupSchedules', function (event, schedules) {
   allTasks = schedules;
   updateObjectPosition(allTasks);
+  console.log(schedules);
   setupSchedules(schedules);
 });
 
@@ -74,8 +75,9 @@ function addItemToBody (obj, position ) {
 
   item.appendChild(title);
   item.appendChild(itemFooter);
-
-  //if (obj.)
+  if (obj.status == 1) {
+    item.style.backgroundColor = "grey";
+  }
 
   if (position === null) {
     container.appendChild(item);
