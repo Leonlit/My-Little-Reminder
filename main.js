@@ -182,7 +182,14 @@ function changeTaskStatusToNotified (taskID) {
 
 ipcMain.on("deleteData", (e, taskID)=>{
   DB.deleteTask(taskID, ()=>{
-    top.win.webContents.send('deletedDataFromDB', taskID)
+    allTasks.forEach((element, index)=>{
+      if (element.getDB_ID() == taskID) {
+        allTasks[index].cancelTaskScheduled();
+        allTasks.splice(index, 1)
+      }
+    });
+    console.log('server side:' + allTasks);
+    top.win.webContents.send('deletedDataFromDB', taskID);
   });
 });
 
@@ -195,5 +202,5 @@ function getItemFromID (taskID) {
 }
 
 ipcMain.on("updateItem", (e, taskID, newTitle, newTime)=>{
-  console.log(taskID, newTitle, newTime);
+  console.log(taskID + "," + newTitle + "," + newTime);
 })

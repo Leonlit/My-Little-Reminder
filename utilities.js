@@ -36,6 +36,10 @@ class Task{
                         this.#minutes, this.#time);
         this.#scheduler.scheduleTaskNotification(this.#taskID, this.#callBack);
     }
+
+    cancelTaskScheduled() {
+        this.#scheduler.cancelTaskScheduler();
+    }
     
     getScheduleState () {
         return this.#scheduler.state;

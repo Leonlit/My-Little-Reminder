@@ -42,10 +42,10 @@ function addNewSchedules (obj) {
   addItemToBody(obj, position)
 }
 
-function addItemToBody (obj, position ) {
+function addItemToBody (obj, position) {
   const item = document.createElement("div");
   const title = document.createElement("div");
-  const time = getTime(obj.taskTime);
+  const time = getTimeFrom_24_format(obj.taskTime);
   const itemFooter = document.createElement("div");
   const timeHolder = document.createElement("span");
   const editIcon = document.createElement("i");
@@ -86,14 +86,30 @@ function addItemToBody (obj, position ) {
   }
 }
 
-function deleteTask (ID, position) {
-  console.log(ID, position);
+function deleteTask (ID) {
   ipcRenderer.send("deleteData", ID);
 }
 
 ipcRenderer.on('deletedDataFromDB', (event, taskID) => {
   document.getElementById(taskID).remove();
+  const position = getTaskPositionFromID(taskID);
+  console.log("position" + position);
+  if (position > -1) {
+    allTasks.splice(position, 1);
+    console.log(allTasks);
+  }
 });
+
+function getTaskPositionFromID (id) {
+  let result = -1;
+  allTasks.forEach((element, index) => {
+    if (element.taskID == id) {
+      console.log("found" + id);
+      result = index;
+    }
+  });
+  return result;
+}
 
 ipcRenderer.on("notifiedTask", (event, taskID) => {
   notifiedTask(taskID);
@@ -133,12 +149,18 @@ function enableTaskEditMode (obj, position, itemCont, titleCont, timeCont) {
   const delClone = delIcon.cloneNode(true);
   editIcon.parentNode.replaceChild(editClone, editIcon);
   delIcon.parentNode.replaceChild(delClone, delIcon);
-
-  const title = titleCont.textContent;
-  const time = checkTimeValidity(timeCont.textContent)
+  
   editClone.addEventListener("click", ()=>{
-    document.getElementById(itemCont.id).remove();
-    ipcRenderer.send("updateItem", itemCont.id ,);
+    const title = titleCont.textContent;
+    const timeValidity = checkTimeValidity(timeCont.textContent);
+    let time_12_hFormat;
+  if (timeValidity) {
+    time_12_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
+  }
+    if (timeValidity) {
+      document.getElementById(itemCont.id).remove();
+      ipcRenderer.send("updateItem", itemCont.id ,title, time_12_hFormat);
+    }
   })
   delClone.addEventListener("click", ()=>{
     disableTaskEditMode(obj, position, itemCont, titleCont, timeCont);
@@ -168,35 +190,37 @@ function disableTaskEditMode (obj, position, itemCont, titleCont, timeCont) {
 
 function checkTimeValidity (timeString) {
   const timeArr = timeString.split(":");
-  const timePeriod = timeArr[1].substring(-2).toLowerCase();
+  const secondSection = timeArr[1].split(" ");
   const hour = timeArr[0];
-  const minute = timeArr[1].substring(0, -2);
+  const timePeriod = secondSection[1];
+  const minute = secondSection[0];
   const isPeriodValid = checkTimePeriodValidity(timePeriod);
 
-  if (minute.length > 2 || hour.length > 2 || minute > 60 ||
+  if (minute.length > 2 || hour.length > 2 || minute > 59 ||
     hour > 12 || hour < 1 || minute < 0) {
-      alertTimeInvalidation();
+      alert("The time format is invalid!!! Please try again.");
   }else {
     if (!isPeriodValid) {
-      alertPeriodInvalidation();
+      alert("The time period is invalid!!! Please try again.");
     }else {
-      return true;
+      return {hour, minute, timePeriod};
     }
   }
   return false;
 }
 
-function formatTimeToFormat_12_Hour (timePeriod, hour, minute) {
+function formatTimeToFormat_24_Hour (hour, minute, timePeriod) {
   if (timePeriod == "pm") {
     if (hour < 12 ) {
       hour += 12;
     }
   }
+  return `${hour}:${minute} ${timePeriod.toUpperCase()}`;
 }
 
 function checkTimePeriodValidity (period) {
   period = period.toLowerCase();
-  return timePeriod == "am" || timePeriod == "pm";
+  return period == "am" || period == "pm";
 }
 
 //adding new item to database
@@ -260,15 +284,20 @@ function compareObjectByTime (obj, obj2) {
   }
 }
 
-function getTime (timeArr) {
+//changing 24-hour format to a 12-hour time format
+function getTimeFrom_24_format (timeArr) {
   let hour = timeArr[0];
   const minute = timeArr[1];
-  let str = " PM"
+  let str = "PM"
   if (hour < 12) {
-      str = " AM"
+      str = "AM"
   }
   if (hour > 12) {
-    hour -=12;
+    hour -= 12;
   }
+  if(hour == 0) {
+    hour = 12;
+  }
+
   return `${hour}:${minute} ${str}`;
 }

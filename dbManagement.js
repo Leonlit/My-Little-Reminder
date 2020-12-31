@@ -112,7 +112,7 @@ class DBManagement {
         })
     }
 
-    deleteTask(taskID, callback) {
+    deleteTask(taskID,callback) {
         const query = `DELETE FROM TASKS WHERE taskID=?`;
         this.#SQLiteObj.run(query, [taskID], function (err) {
             console.log(this.changes);
