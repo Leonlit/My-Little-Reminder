@@ -111,11 +111,6 @@ function editTask (obj, position) {
   console.log(itemCont, titleCont.textContent, timeCont.textContent);
   enableTaskEditMode(obj, position, itemCont, titleCont, timeCont);
   makeContEditable(titleCont, timeCont);
-  
-  //container.appendChild()
-  //allTasks[position] = newTaskObject;
-  //updateObjectPosition();
-  //const element = container.childNodes[position];
 }
 
 function makeContEditable (titleCont, timeCont) {
@@ -139,9 +134,11 @@ function enableTaskEditMode (obj, position, itemCont, titleCont, timeCont) {
   editIcon.parentNode.replaceChild(editClone, editIcon);
   delIcon.parentNode.replaceChild(delClone, delIcon);
 
+  const title = titleCont.textContent;
+  const time = checkTimeValidity(timeCont.textContent)
   editClone.addEventListener("click", ()=>{
     document.getElementById(itemCont.id).remove();
-    ipcRenderer.send("updateItem", itemCont.id ,titleCont.textContent, timeCont.textContent);
+    ipcRenderer.send("updateItem", itemCont.id ,);
   })
   delClone.addEventListener("click", ()=>{
     disableTaskEditMode(obj, position, itemCont, titleCont, timeCont);
@@ -169,6 +166,38 @@ function disableTaskEditMode (obj, position, itemCont, titleCont, timeCont) {
   });
 }
 
+function checkTimeValidity (timeString) {
+  const timeArr = timeString.split(":");
+  const timePeriod = timeArr[1].substring(-2).toLowerCase();
+  const hour = timeArr[0];
+  const minute = timeArr[1].substring(0, -2);
+  const isPeriodValid = checkTimePeriodValidity(timePeriod);
+
+  if (minute.length > 2 || hour.length > 2 || minute > 60 ||
+    hour > 12 || hour < 1 || minute < 0) {
+      alertTimeInvalidation();
+  }else {
+    if (!isPeriodValid) {
+      alertPeriodInvalidation();
+    }else {
+      return true;
+    }
+  }
+  return false;
+}
+
+function formatTimeToFormat_12_Hour (timePeriod, hour, minute) {
+  if (timePeriod == "pm") {
+    if (hour < 12 ) {
+      hour += 12;
+    }
+  }
+}
+
+function checkTimePeriodValidity (period) {
+  period = period.toLowerCase();
+  return timePeriod == "am" || timePeriod == "pm";
+}
 
 //adding new item to database
 function addNewTaskToStorage (event) {
