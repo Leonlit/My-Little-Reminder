@@ -99,14 +99,14 @@ class DBManagement {
         })
     }
 
-    updateTaskInfo(taskID, taskNewTitle, taskNewTime) {
-        const query = `UPDATE TASKS SET taskTitle=?, taskTime=? WHERE taskID=?)`;
-        this.#SQLiteObj.run(query, [taskNewTitle, taskNewTime, taskID], err=> {
+    updateTaskInfo(taskObj, callback) {
+        const query = `UPDATE TASKS SET taskTitle=?, taskTime=? WHERE taskID=?`;
+        this.#SQLiteObj.run(query, [taskObj.taskTitle, taskObj.taskTime.trim(), taskObj.taskID], err=> {
             if (err) {
                 console.log(`could not insert task info into database, ${err}`);
             }else {
                 console.log("succesfully updated task info in database.");
-                return true;
+                callback(taskObj)
             }
             return false;
         })

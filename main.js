@@ -7,7 +7,7 @@ const utilities = require("./utilities.js");
 const {DBManagement} = require("./dbManagement.js");
 const {Task} = utilities;
 const {app, BrowserWindow, Menu, ipcMain, nativeImage, Tray} = electron;
-const iconURL = "./assets/logo_128.png";
+const iconURL = path.join(__dirname, "/assets/logo_128.png");
 let allTasks = []
 
 // SET ENV development will enable the devs tools in app
@@ -160,14 +160,16 @@ function insertStatusIntoObject (objArr, taskArr) {
 
 // Catch addItem
 ipcMain.on('addItem', (e, taskTitle, time, date)=>{
-  DB.insertTask(taskTitle, time, date, (data, timeArr) =>{
+  DB.insertTask(taskTitle, time, date, createNewTaskObject);
+})
+
+function createNewTaskObject (data, timeArr) {
     const task = new Task(data, itemNotified);
     allTasks.push(task);
     data.taskTime = timeArr;
     data.status = task.getStatus();
     top.win.webContents.send('newItemAdded', data);
-  });
-});
+}
 
 function itemNotified(taskID){
   changeTaskStatusToNotified(taskID)
@@ -182,16 +184,20 @@ function changeTaskStatusToNotified (taskID) {
 
 ipcMain.on("deleteData", (e, taskID)=>{
   DB.deleteTask(taskID, ()=>{
-    allTasks.forEach((element, index)=>{
-      if (element.getDB_ID() == taskID) {
-        allTasks[index].cancelTaskScheduled();
-        allTasks.splice(index, 1)
-      }
-    });
+    cancelScedulerInArray (allTasks, taskID)
     console.log('server side:' + allTasks);
-    top.win.webContents.send('deletedDataFromDB', taskID);
+    top.win.webContents.send('deletedTaskInDB', taskID);
   });
 });
+
+function cancelScedulerInArray (arr, taskID) {
+  arr.forEach((element, index)=>{
+    if (element.getDB_ID() == taskID) {
+      arr[index].cancelTaskScheduled();
+      arr.splice(index, 1)
+    }
+  });
+}
 
 function getItemFromID (taskID) {
   let result;
@@ -202,5 +208,18 @@ function getItemFromID (taskID) {
 }
 
 ipcMain.on("updateItem", (e, taskID, newTitle, newTime)=>{
-  console.log(taskID + "," + newTitle + "," + newTime);
+  console.log(newTime);
+  const _24_H_format = newTime.substring(0, 5);
+  DB.updateTaskInfo({taskID: taskID, taskTime: _24_H_format, taskTitle: newTitle}, (taskObj)=>{
+    cancelScedulerInArray(allTasks, taskID);
+    createNewTaskObject(taskObj, newTime.replace(new RegExp(/PM|AM|\s/, "ig"), "").split(":"));
+    printAllTaskTime(allTasks);
+    top.win.webContents.send('updatedTaskInDB', taskObj);
+  });
 })
+
+function printAllTaskTime (arr) {
+  arr.forEach(element => {
+    console.log(element.getTime());
+  });
+}

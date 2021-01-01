@@ -1,2 +1,4 @@
 node_modules/
 tasks.db
+release-builds/
+test.js

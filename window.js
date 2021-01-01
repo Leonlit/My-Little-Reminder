@@ -90,7 +90,7 @@ function deleteTask (ID) {
   ipcRenderer.send("deleteData", ID);
 }
 
-ipcRenderer.on('deletedDataFromDB', (event, taskID) => {
+ipcRenderer.on('deletedTaskInDB', (event, taskID) => {
   document.getElementById(taskID).remove();
   const position = getTaskPositionFromID(taskID);
   console.log("position" + position);
@@ -99,6 +99,10 @@ ipcRenderer.on('deletedDataFromDB', (event, taskID) => {
     console.log(allTasks);
   }
 });
+
+ipcRenderer.on("updatedTaskInDB", (event, taskObj)=>{
+  console.log(taskObj);
+})
 
 function getTaskPositionFromID (id) {
   let result = -1;
@@ -122,54 +126,75 @@ function notifiedTask (taskID) {
 
 function editTask (obj, position) {
   const itemCont = document.getElementById(obj.taskID);
-  const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
-  const timeCont = itemCont.getElementsByTagName("span")[0];
-  console.log(itemCont, titleCont.textContent, timeCont.textContent);
-  enableTaskEditMode(obj, position, itemCont, titleCont, timeCont);
-  makeContEditable(titleCont, timeCont);
+  enableTaskEditMode(obj, itemCont);
+  makeContEditable(itemCont);
 }
 
-function makeContEditable (titleCont, timeCont) {
+function makeContEditable (itemCont) {
+  const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
+  const timeCont = itemCont.getElementsByTagName("span")[0];
   titleCont.contentEditable = "true";
   timeCont.contentEditable = "true";
 }
 
-function makeContNotEditable (titleCont, timeCont) {
+function makeContNotEditable (itemCont) {
+  const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
+  const timeCont = itemCont.getElementsByTagName("span")[0];
   titleCont.contentEditable = "false";
   timeCont.contentEditable = "false";
 }
 
-function enableTaskEditMode (obj, position, itemCont, titleCont, timeCont) {
+function resetContContent (itemCont, title, time) {
+  const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
+  const timeCont = itemCont.getElementsByTagName("span")[0];
+  titleCont.textContent = title;
+  timeCont.textContent = time;
+}
+
+function enableTaskEditMode (obj, itemCont) {
   const editIcon = itemCont.getElementsByClassName("editBtn")[0];
   const delIcon = itemCont.getElementsByClassName("closeBtn")[0];
+  const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
+  const timeCont = itemCont.getElementsByTagName("span")[0];
+
   editIcon.classList.remove("fa-pencil");
   editIcon.classList.add("fa-check");
+  const ori_title = titleCont.textContent;
+  const ori_time = timeCont.textContent;
 
   const editClone = editIcon.cloneNode(true);
   const delClone = delIcon.cloneNode(true);
   editIcon.parentNode.replaceChild(editClone, editIcon);
   delIcon.parentNode.replaceChild(delClone, delIcon);
-  
+
+  const position = getTaskPositionFromID(itemCont.id);
   editClone.addEventListener("click", ()=>{
-    const title = titleCont.textContent;
-    const timeValidity = checkTimeValidity(timeCont.textContent);
-    let time_12_hFormat;
-  if (timeValidity) {
-    time_12_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
-  }
+    const title = ori_title;
+    const timeValidity = checkTimeValidity(ori_time);
+    let time_24_hFormat;
+    if (timeValidity) {
+      time_24_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
+    }
     if (timeValidity) {
       document.getElementById(itemCont.id).remove();
-      ipcRenderer.send("updateItem", itemCont.id ,title, time_12_hFormat);
+      try {
+        allTasks.splice(position, 1);
+        console.log(allTasks);
+      }catch (ex) {
+        console.log(ex);
+      }
+      ipcRenderer.send("updateItem", Number(itemCont.id) ,title, time_24_hFormat);
     }
   })
   delClone.addEventListener("click", ()=>{
-    disableTaskEditMode(obj, position, itemCont, titleCont, timeCont);
+    disableTaskEditMode(obj, itemCont, ori_title, ori_time );
   });
 }
 
-function disableTaskEditMode (obj, position, itemCont, titleCont, timeCont) {
-  console.log(titleCont, timeCont);
-  makeContNotEditable(titleCont, timeCont);
+function disableTaskEditMode (obj, itemCont, ori_title, ori_time) {
+  const position = getTaskPositionFromID(itemCont.id);
+  makeContNotEditable(itemCont);
+  resetContContent(itemCont, ori_title, ori_time);
   const editIcon = itemCont.getElementsByClassName("editBtn")[0];
   const delIcon = itemCont.getElementsByClassName("closeBtn")[0];
   editIcon.classList.remove("fa-check");
@@ -192,8 +217,9 @@ function checkTimeValidity (timeString) {
   const timeArr = timeString.split(":");
   const secondSection = timeArr[1].split(" ");
   const hour = timeArr[0];
-  const timePeriod = secondSection[1];
+  const timePeriod = secondSection[secondSection.length - 1];
   const minute = secondSection[0];
+  console.log(secondSection, timePeriod);
   const isPeriodValid = checkTimePeriodValidity(timePeriod);
 
   if (minute.length > 2 || hour.length > 2 || minute > 59 ||
@@ -210,12 +236,12 @@ function checkTimeValidity (timeString) {
 }
 
 function formatTimeToFormat_24_Hour (hour, minute, timePeriod) {
-  if (timePeriod == "pm") {
+  if (timePeriod.toLowerCase() == "pm") {
     if (hour < 12 ) {
-      hour += 12;
+      hour = Number(hour) + 12;
     }
   }
-  return `${hour}:${minute} ${timePeriod.toUpperCase()}`;
+  return `${`${hour}`.padStart(2, '0')}:${minute.padStart(2, '0')} ${timePeriod.toUpperCase()}`;
 }
 
 function checkTimePeriodValidity (period) {
@@ -262,6 +288,7 @@ function getPositionForBiggerValue(obj, arr) {
       break;
     }
   }
+  console.log("position" + position);
   return position == undefined ? null: position ;
 }
 
@@ -286,7 +313,7 @@ function compareObjectByTime (obj, obj2) {
 
 //changing 24-hour format to a 12-hour time format
 function getTimeFrom_24_format (timeArr) {
-  let hour = timeArr[0];
+  let hour = Number(timeArr[0]);
   const minute = timeArr[1];
   let str = "PM"
   if (hour < 12) {

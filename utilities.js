@@ -38,11 +38,18 @@ class Task{
     }
 
     cancelTaskScheduled() {
-        this.#scheduler.cancelTaskScheduler();
+        console.log(this.#scheduler);
+        if (this.#scheduler != undefined) {
+            this.#scheduler.cancelTaskScheduler();
+        }
     }
     
     getScheduleState () {
         return this.#scheduler.state;
+    }
+
+    getTime() {
+        return this.#time;
     }
 
     getDB_ID () {
@@ -67,19 +74,6 @@ class Task{
             this.#status = 0;
         }
         console.log(this.#status);
-    }
-
-    //change time to a new one
-    changeTime(newTime) {
-        this.#time = newTime;
-        updateTimeStructure();
-        resetScheduler();
-    }
-    
-    //used when user decided to change the title
-    changeTitle(newTitle) {
-        this.#title = newTitle;
-        resetScheduler();
     }
 
     resetScheduler () {
