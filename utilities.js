@@ -72,11 +72,6 @@ class Task{
         }
         console.log(this.#status);
     }
-
-    resetScheduler () {
-        this.#scheduler.cancelTaskScheduler();
-        createNewSceduler();
-    }
 }
 
 class Scheduler{
@@ -89,7 +84,6 @@ class Scheduler{
         this.#title = newTitle;
         this.#hour = newHour;
         this.#minutes = newMinutes;
-        this.state = 0;
     }
 
     cancelTaskScheduler () {

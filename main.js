@@ -14,7 +14,6 @@ let allTasks = []
 process.env.NODE_ENV = 'development';
 
 let DB = new DBManagement();
-let addWindow;
 
 app.on("ready", ev => {
   top.win = new BrowserWindow({
