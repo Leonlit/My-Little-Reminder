@@ -131,31 +131,38 @@ function editTask (obj, position) {
 }
 
 function makeContEditable (itemCont) {
-  const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
-  const timeCont = itemCont.getElementsByTagName("span")[0];
+  const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
   titleCont.contentEditable = "true";
   timeCont.contentEditable = "true";
 }
 
 function makeContNotEditable (itemCont) {
-  const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
-  const timeCont = itemCont.getElementsByTagName("span")[0];
+  const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
   titleCont.contentEditable = "false";
   timeCont.contentEditable = "false";
 }
 
-function resetContContent (itemCont, title, time) {
+function getItemTitleAndTimeCont (itemCont) {
   const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
   const timeCont = itemCont.getElementsByTagName("span")[0];
+  return {titleCont, timeCont};
+}
+
+function getEditAndDeleteIconCont(itemCont) {
+  const editIcon = itemCont.getElementsByClassName("editBtn")[0];
+  const delIcon = itemCont.getElementsByClassName("closeBtn")[0];
+  return {editIcon, delIcon};
+}
+
+function resetContContent (itemCont, title, time) {
+  const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
   titleCont.textContent = title;
   timeCont.textContent = time;
 }
 
 function enableTaskEditMode (obj, itemCont) {
-  const editIcon = itemCont.getElementsByClassName("editBtn")[0];
-  const delIcon = itemCont.getElementsByClassName("closeBtn")[0];
-  const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
-  const timeCont = itemCont.getElementsByTagName("span")[0];
+  const {editIcon, delIcon} = getEditAndDeleteIconCont(itemCont);
+  const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
 
   editIcon.classList.remove("fa-pencil");
   editIcon.classList.add("fa-check");
@@ -169,8 +176,8 @@ function enableTaskEditMode (obj, itemCont) {
 
   const position = getTaskPositionFromID(itemCont.id);
   editClone.addEventListener("click", ()=>{
-    const title = ori_title;
-    const timeValidity = checkTimeValidity(ori_time);
+    const title = titleCont.textContent;
+    const timeValidity = checkTimeValidity(timeCont.textContent);
     let time_24_hFormat;
     if (timeValidity) {
       time_24_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
@@ -195,8 +202,7 @@ function disableTaskEditMode (obj, itemCont, ori_title, ori_time) {
   const position = getTaskPositionFromID(itemCont.id);
   makeContNotEditable(itemCont);
   resetContContent(itemCont, ori_title, ori_time);
-  const editIcon = itemCont.getElementsByClassName("editBtn")[0];
-  const delIcon = itemCont.getElementsByClassName("closeBtn")[0];
+  const {editIcon, delIcon} = getEditAndDeleteIconCont(itemCont);
   editIcon.classList.remove("fa-check");
   editIcon.classList.add("fa-pencil");
 

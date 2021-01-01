@@ -43,10 +43,6 @@ class Task{
             this.#scheduler.cancelTaskScheduler();
         }
     }
-    
-    getScheduleState () {
-        return this.#scheduler.state;
-    }
 
     getTime() {
         return this.#time;
