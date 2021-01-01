@@ -12,20 +12,20 @@ ipcRenderer.send("setupData")
 let allTasks = []
 
 const titleInputField = document.querySelector('#titleInput');
-  const timeInputField = document.querySelector('#timeInput');
+const timeInputField = document.querySelector('#timeInput');
 
 //when the window is ready and a message is sent from server
 ipcRenderer.on('setupSchedules', function (event, schedules) {
   allTasks = schedules;
   updateObjectPosition(allTasks);
   console.log(schedules);
-  setupSchedules(schedules);
+  setupTasks(schedules);
 });
 
 //initial setup for the schedules
-function setupSchedules (schedules) {
+function setupTasks (schedules) {
   schedules.forEach((objRow, index)=>{
-    addItemToBody(objRow, index);
+    addTaskIntoPage(objRow, index);
   })
 }
 
@@ -33,16 +33,16 @@ function setupSchedules (schedules) {
 ipcRenderer.on('newItemAdded', function (event, schedules) {
   allTasks.push(schedules);
   updateObjectPosition(allTasks);
-  addNewSchedules(schedules);
+  addNewTask(schedules);
 });
 
 //when a new schedule is added
-function addNewSchedules (obj) {
+function addNewTask (obj) {
   const position = getPositionForBiggerValue(obj, allTasks);
-  addItemToBody(obj, position)
+  addTaskIntoPage(obj, position)
 }
 
-function addItemToBody (obj, position) {
+function addTaskIntoPage (obj, position) {
   const item = document.createElement("div");
   const title = document.createElement("div");
   const time = getTimeFrom_24_format(obj.taskTime);
@@ -57,11 +57,11 @@ function addItemToBody (obj, position) {
   title.classList = "itemTitle"
 
   deleteIcon.addEventListener("click", () => {
-    deleteTask(obj.taskID, position);
+    deleteTask(obj.taskID);
   });
 
   editIcon.addEventListener("click", ()=>{
-    editTask(obj, position)
+    editTask(obj)
   });
 
   item.classList = "item";
@@ -91,14 +91,18 @@ function deleteTask (ID) {
 }
 
 ipcRenderer.on('deletedTaskInDB', (event, taskID) => {
-  document.getElementById(taskID).remove();
-  const position = getTaskPositionFromID(taskID);
-  console.log("position" + position);
-  if (position > -1) {
-    allTasks.splice(position, 1);
-    console.log(allTasks);
-  }
+    deleteTaskFromPage(taskID)
+    const position = getTaskPositionFromID(taskID);
+    console.log("position" + position);
+    if (position > -1) {
+        allTasks.splice(position, 1);
+        console.log(allTasks);
+    }
 });
+
+function deleteTaskFromPage(taskID) {
+    document.getElementById(taskID).remove();
+}
 
 ipcRenderer.on("updatedTaskInDB", (event, taskObj)=>{
   console.log(taskObj);
@@ -124,7 +128,7 @@ function notifiedTask (taskID) {
   element.style.backgroundColor = "grey";
 }
 
-function editTask (obj, position) {
+function editTask (obj) {
   const itemCont = document.getElementById(obj.taskID);
   enableTaskEditMode(obj, itemCont);
   makeContEditable(itemCont);
@@ -181,9 +185,7 @@ function enableTaskEditMode (obj, itemCont) {
     let time_24_hFormat;
     if (timeValidity) {
       time_24_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
-    }
-    if (timeValidity) {
-      document.getElementById(itemCont.id).remove();
+      deleteTaskFromPage(itemCont.id);
       try {
         allTasks.splice(position, 1);
         console.log(allTasks);
@@ -212,10 +214,10 @@ function disableTaskEditMode (obj, itemCont, ori_title, ori_time) {
   delIcon.parentNode.replaceChild(delClone, delIcon);
 
   editClone.addEventListener("click", ()=>{
-    editTask(obj, position)
+    editTask(obj)
   })
   delClone.addEventListener("click", ()=>{
-    deleteTask(obj.taskID, position);
+    deleteTask(obj.taskID);
   });
 }
 
@@ -245,6 +247,10 @@ function formatTimeToFormat_24_Hour (hour, minute, timePeriod) {
   if (timePeriod.toLowerCase() == "pm") {
     if (hour < 12 ) {
       hour = Number(hour) + 12;
+    }
+  }else {
+    if (hour == 12) {
+        hour = 0;
     }
   }
   return `${`${hour}`.padStart(2, '0')}:${minute.padStart(2, '0')} ${timePeriod.toUpperCase()}`;
