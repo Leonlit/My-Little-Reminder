@@ -17,7 +17,7 @@ const timeInputField = document.querySelector('#timeInput');
 //when the window is ready and a message is sent from server
 ipcRenderer.on('setupSchedules', function (event, schedules) {
   allTasks = schedules;
-  updateObjectPosition(allTasks);
+  updateArrayItemPosition(allTasks);
   console.log(schedules);
   setupTasks(schedules);
 });
@@ -32,15 +32,10 @@ function setupTasks (schedules) {
 //when new item added
 ipcRenderer.on('newItemAdded', function (event, schedules) {
   allTasks.push(schedules);
-  updateObjectPosition(allTasks);
-  addNewTask(schedules);
+  updateArrayItemPosition(allTasks);
+  const position = getPositionForBiggerValue(schedules, allTasks);
+  addTaskIntoPage(schedules, position)
 });
-
-//when a new schedule is added
-function addNewTask (obj) {
-  const position = getPositionForBiggerValue(obj, allTasks);
-  addTaskIntoPage(obj, position)
-}
 
 function addTaskIntoPage (obj, position) {
   const item = document.createElement("div");
@@ -61,7 +56,7 @@ function addTaskIntoPage (obj, position) {
   });
 
   editIcon.addEventListener("click", ()=>{
-    editTask(obj)
+    editTask(obj.taskID)
   });
 
   item.classList = "item";
@@ -128,9 +123,9 @@ function notifiedTask (taskID) {
   element.style.backgroundColor = "grey";
 }
 
-function editTask (obj) {
-  const itemCont = document.getElementById(obj.taskID);
-  enableTaskEditMode(obj, itemCont);
+function editTask (id) {
+  const itemCont = document.getElementById(id);
+  enableTaskEditMode(itemCont);
   makeContEditable(itemCont);
 }
 
@@ -164,7 +159,7 @@ function resetContContent (itemCont, title, time) {
   timeCont.textContent = time;
 }
 
-function enableTaskEditMode (obj, itemCont) {
+function enableTaskEditMode (itemCont) {
   const {editIcon, delIcon} = getEditAndDeleteIconCont(itemCont);
   const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
 
@@ -196,11 +191,11 @@ function enableTaskEditMode (obj, itemCont) {
     }
   })
   delClone.addEventListener("click", ()=>{
-    disableTaskEditMode(obj, itemCont, ori_title, ori_time );
+    disableTaskEditMode(itemCont, ori_title, ori_time );
   });
 }
 
-function disableTaskEditMode (obj, itemCont, ori_title, ori_time) {
+function disableTaskEditMode (itemCont, ori_title, ori_time) {
   const position = getTaskPositionFromID(itemCont.id);
   makeContNotEditable(itemCont);
   resetContContent(itemCont, ori_title, ori_time);
@@ -214,10 +209,10 @@ function disableTaskEditMode (obj, itemCont, ori_title, ori_time) {
   delIcon.parentNode.replaceChild(delClone, delIcon);
 
   editClone.addEventListener("click", ()=>{
-    editTask(obj)
+    editTask(itemCont.id)
   })
   delClone.addEventListener("click", ()=>{
-    deleteTask(obj.taskID);
+    deleteTask(itemCont.id);
   });
 }
 
@@ -285,7 +280,7 @@ function getDate(dateObj=null) {
   return yyyy + "-" + mm + "-" + dd;
 }
 
-function updateObjectPosition (taskArr) {
+function updateArrayItemPosition (taskArr) {
   taskArr.sort(compareObjectByTime)
 }
 

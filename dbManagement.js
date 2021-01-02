@@ -55,18 +55,6 @@ class DBManagement {
         });
     }
 
-    getSingleTask(taskID){
-        const query = `SELECT * FROM TASKS WHERE taskID=?`;
-        this.#SQLiteObj.get(query, [taskID,], (err, row)=>  {
-            if (err) {
-                console.log(`Error occured when getting Task info for item ID ${taskID}, ${err}`);
-                return false;
-            }else {
-                return row;     //returning single object
-            }
-        });
-    }
-
     getAllTask (callback) {
         const query = `SELECT * FROM TASKS`;
         this.#SQLiteObj.all(query, (err, row)=>  {
@@ -112,7 +100,7 @@ class DBManagement {
         })
     }
 
-    deleteTask(taskID,callback) {
+    deleteTask(taskID, callback) {
         const query = `DELETE FROM TASKS WHERE taskID=?`;
         this.#SQLiteObj.run(query, [taskID], function (err) {
             console.log(this.changes);
