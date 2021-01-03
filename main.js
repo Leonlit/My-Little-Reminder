@@ -11,7 +11,7 @@ const iconURL = path.join(__dirname, "/assets/logo_128.png");
 let allTasks = []
 
 // SET ENV development will enable the devs tools in app
-process.env.NODE_ENV = 'production';
+process.env.NODE_ENV = 'development';
 
 const DB = new DBManagement();
 const gotTheLock = app.requestSingleInstanceLock();
@@ -122,6 +122,12 @@ ipcMain.on("setupData", ()=>{
     top.win.webContents.send('setupSchedules', data);
   });
 });
+
+ipcMain.on("clearAll", ()=>{
+  DB.clearAll(()=>{
+    top.win.webContents.send('allTaskCleared');
+  });
+})
 
 function insertStatusIntoObject (objArr, taskArr) {
   objArr = objArr.slice();

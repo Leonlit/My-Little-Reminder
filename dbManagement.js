@@ -55,6 +55,18 @@ class DBManagement {
         });
     }
 
+    clearAll(callback) {
+        const query = `DELETE FROM TASKS`;
+        this.#SQLiteObj.all(query, (err)=>  {
+            if (err) {
+                console.log(`Error occured when clearing all records from database`);
+                return callback(false);
+            }else {
+                return callback();
+            }
+        })
+    }
+
     getAllTask (callback) {
         const query = `SELECT * FROM TASKS`;
         this.#SQLiteObj.all(query, (err, row)=>  {
@@ -62,7 +74,7 @@ class DBManagement {
                 console.log(`Error occured when retrieving all records from database`);
                 return callback(false);
             }else {
-                return callback(row);     //returning arraay of objects
+                return callback(row);     //returning array of objects
             }
         })
     }

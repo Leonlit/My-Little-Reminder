@@ -95,6 +95,11 @@ ipcRenderer.on('deletedTaskInDB', (event, taskID) => {
     }
 });
 
+ipcRenderer.on("allTaskCleared", ()=>{
+  console.log("cleared all");
+  container.innerHTML = "";
+})
+
 function deleteTaskFromPage(taskID) {
     document.getElementById(taskID).remove();
 }
@@ -262,6 +267,10 @@ function addNewTaskToStorage (event) {
   const date = getDate();
   ipcRenderer.send('addItem', titleInputField.value, timeInputField.value, date);
   clearFormField();
+}
+
+function clearAll () {
+  ipcRenderer.send('clearAll');
 }
 
 function clearFormField() {
