@@ -100,6 +100,7 @@ function deleteTaskFromPage(taskID) {
 }
 
 ipcRenderer.on("updatedTaskInDB", (event, taskObj)=>{
+  deleteTaskFromPage(taskObj.taskID);
   console.log(taskObj);
 })
 
@@ -180,7 +181,6 @@ function enableTaskEditMode (itemCont) {
     let time_24_hFormat;
     if (timeValidity) {
       time_24_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
-      deleteTaskFromPage(itemCont.id);
       try {
         allTasks.splice(position, 1);
         console.log(allTasks);
@@ -332,6 +332,5 @@ function getTimeFrom_24_format (timeArr) {
   if(hour == 0) {
     hour = 12;
   }
-
   return `${hour}:${minute} ${str}`;
 }

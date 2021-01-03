@@ -11,9 +11,15 @@ const iconURL = path.join(__dirname, "/assets/logo_128.png");
 let allTasks = []
 
 // SET ENV development will enable the devs tools in app
-process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'production';
 
-let DB = new DBManagement();
+const DB = new DBManagement();
+const gotTheLock = app.requestSingleInstanceLock();
+
+//check if there's another application instance already opened
+if (!gotTheLock) {
+  app.quit()
+}
 
 app.on("ready", ev => {
   top.win = new BrowserWindow({
@@ -65,7 +71,7 @@ app.on("before-quit", ev => {
 
 const mainMenuTemplate =  [
   {
-    label: 'File',
+    label: 'Menu',
     submenu:[
       {
         label: 'Exit',
