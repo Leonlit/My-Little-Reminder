@@ -146,15 +146,16 @@ function itemNotified(taskID){
 function changeTaskStatusToNotified (taskID) {
   const obj = getItemFromID(taskID);
   obj.setTaskNotified();
-  console.log("status changed");
 }
 
 ipcMain.on("deleteData", (e, taskID)=>{
-  DB.deleteTask(taskID, ()=>{
-    cancelScedulerInArray (allTasks, taskID)
-    console.log('server side:' + allTasks);
-    top.win.webContents.send('deletedTaskInDB', taskID);
-  });
+  if (checkIfTaskExists(taskID)){
+    DB.deleteTask(taskID, ()=>{
+        cancelScedulerInArray (allTasks, taskID)
+        console.log('server side:' + allTasks);
+        top.win.webContents.send('deletedTaskInDB', taskID);
+    });
+  }
 });
 
 function cancelScedulerInArray (arr, taskID) {
@@ -174,15 +175,21 @@ function getItemFromID (taskID) {
   return result;
 }
 
+function checkIfTaskExists (taskID) {
+  const item = getItemFromID(taskID);
+  return !item? false: true;
+}
+
 ipcMain.on("updateItem", (e, taskID, newTitle, newTime)=>{
-  console.log(newTime);
-  const _24_H_format = newTime.substring(0, 5);
-  DB.updateTaskInfo({taskID: taskID, taskTime: _24_H_format, taskTitle: newTitle}, (taskObj)=>{
-    cancelScedulerInArray(allTasks, taskID);
-    createNewTaskObject(taskObj, newTime.replace(new RegExp(/PM|AM|\s/, "ig"), "").split(":"));
-    printAllTaskTime(allTasks);
-    top.win.webContents.send('updatedTaskInDB', taskObj);
-  });
+  if (checkIfTaskExists(taskID)) {
+    const _24_H_format = newTime.substring(0, 5);
+    DB.updateTaskInfo({taskID: taskID, taskTime: _24_H_format, taskTitle: newTitle}, (taskObj)=>{
+      cancelScedulerInArray(allTasks, taskID);
+      createNewTaskObject(taskObj, newTime.replace(new RegExp(/PM|AM|\s/, "ig"), "").split(":"));
+      printAllTaskTime(allTasks);
+      top.win.webContents.send('updatedTaskInDB', taskObj);
+    });
+  }
 })
 
 function printAllTaskTime (arr) {
