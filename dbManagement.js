@@ -115,12 +115,10 @@ class DBManagement {
     deleteTask(taskID, callback) {
         const query = `DELETE FROM TASKS WHERE taskID=?`;
         this.#SQLiteObj.run(query, [taskID], function (err) {
-            console.log(this.changes);
             if (err) {
                 console.log(`could not delete task from database, ${err}`);
             }else if (this.changes == 1){
                 console.log("succesfully deleted task from database.");
-                console.log(this.changes);
                 callback();
                 return true;
             }else {

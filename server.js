@@ -11,7 +11,7 @@ const iconURL = path.join(__dirname, "/assets/logo_128.png");
 let allTasks = []
 
 // SET ENV development will enable the devs tools in app
-process.env.NODE_ENV = 'production';
+process.env.NODE_ENV = 'development';
 
 const DB = new DBManagement();
 const gotTheLock = app.requestSingleInstanceLock();
@@ -31,7 +31,7 @@ app.on("ready", ev => {
       icon: iconURL
   });
   top.win.loadURL(url.format({
-    pathname: path.join(__dirname, 'mainWindow.html'),
+    pathname: path.join(__dirname, 'index.html'),
     protocol: 'file:',
     slashes:true
   }));
@@ -189,6 +189,7 @@ function getItemFromID (taskID) {
 
 function checkIfTaskExists (taskID) {
   const item = getItemFromID(taskID);
+  
   return !item? false: true;
 }
 
@@ -198,7 +199,7 @@ ipcMain.on("updateItem", (e, taskID, newTitle, newTime)=>{
     DB.updateTaskInfo({taskID: taskID, taskTime: _24_H_format, taskTitle: newTitle}, (taskObj)=>{
       cancelScedulerInArray(allTasks, taskID);
       createNewTaskObject(taskObj, newTime.replace(new RegExp(/PM|AM|\s/, "ig"), "").split(":"));
-      printAllTaskTime(allTasks);
+      //printAllTaskTime(allTasks);
       top.win.webContents.send('updatedTaskInDB', taskObj);
     });
   }

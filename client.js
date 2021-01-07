@@ -71,7 +71,8 @@ function addTaskIntoPage (obj, position) {
   item.appendChild(title);
   item.appendChild(itemFooter);
   if (obj.status == 1) {
-    item.style.backgroundColor = "grey";
+    item.style.backgroundColor = "#5f5f5f";
+    item.style.color = "lightgrey";
   }
 
   if (position === null) {
@@ -101,12 +102,12 @@ ipcRenderer.on("allTaskCleared", ()=>{
 })
 
 function deleteTaskFromPage(taskID) {
+    console.log(taskID);
     document.getElementById(taskID).remove();
 }
 
 ipcRenderer.on("updatedTaskInDB", (event, taskObj)=>{
-  deleteTaskFromPage(taskObj.taskID);
-  console.log(taskObj);
+  console.log("test: " + taskObj.taskID);
 })
 
 function getTaskPositionFromID (id) {
@@ -126,7 +127,8 @@ ipcRenderer.on("notifiedTask", (event, taskID) => {
 
 function notifiedTask (taskID) {
   const element = document.getElementById(taskID);
-  element.style.backgroundColor = "grey";
+  element.style.backgroundColor = "#5f5f5f";
+  element.style.color = "lightgrey";
 }
 
 function editTask (id) {
@@ -138,6 +140,7 @@ function editTask (id) {
 function makeContEditable (itemCont) {
   const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
   titleCont.contentEditable = "true";
+  itemCont.style.border = "3px solid orange";
   timeCont.contentEditable = "true";
 }
 
@@ -193,6 +196,7 @@ function enableTaskEditMode (itemCont) {
         console.log(ex);
       }
       ipcRenderer.send("updateItem", Number(itemCont.id) ,title, time_24_hFormat);
+      deleteTaskFromPage(itemCont.id);
     }
   })
   delClone.addEventListener("click", ()=>{

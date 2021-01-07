@@ -39,7 +39,6 @@ class Task{
     }
 
     cancelTaskScheduled() {
-        console.log(this.#scheduler);
         if (this.#scheduler != undefined) {
             this.#scheduler.cancelTaskScheduler();
         }
@@ -70,7 +69,6 @@ class Task{
             if (this.#hour == current_H && this.#minutes <= current_M) return
             this.#status = 0;
         }
-        console.log(this.#status);
     }
 }
 

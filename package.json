@@ -2,7 +2,7 @@
   "name": "my_little_reminder",
   "version": "0.5.0",
   "description": "A simple time reminder app",
-  "main": "main.js",
+  "main": "server.js",
   "scripts": {
     "start": "electron .",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
