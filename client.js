@@ -71,8 +71,7 @@ function addTaskIntoPage (obj, position) {
   item.appendChild(title);
   item.appendChild(itemFooter);
   if (obj.status == 1) {
-    item.style.backgroundColor = "#5f5f5f";
-    item.style.color = "lightgrey";
+    item.classList.add("itemNotified");
   }
 
   if (position === null) {
@@ -127,8 +126,7 @@ ipcRenderer.on("notifiedTask", (event, taskID) => {
 
 function notifiedTask (taskID) {
   const element = document.getElementById(taskID);
-  element.style.backgroundColor = "#5f5f5f";
-  element.style.color = "lightgrey";
+  element.classList.add("itemNotified");
 }
 
 function editTask (id) {
@@ -147,6 +145,7 @@ function makeContEditable (itemCont) {
 function makeContNotEditable (itemCont) {
   const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
   titleCont.contentEditable = "false";
+  itemCont.style.border = "0px solid transparent";
   timeCont.contentEditable = "false";
 }
 

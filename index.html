@@ -7,18 +7,14 @@
   <link rel="stylesheet" href="./main.css"/>
 </head>
 <body>
-  <ul class="nav">
-    <li class="nav-item">
-      <a class="nav-link" href="#" onclick="clearAll()">Clear Schedules</a>
-    </li>
-  </ul>
-  <form class="container" onsubmit="addNewTaskToStorage(event)">
+  <form class="container addGap" onsubmit="addNewTaskToStorage(event)">
     <div class="form-group">
         <div>
           <input type="text" class="form-control" id="titleInput" autofocus placeholder="Enter the task name" required />
           <input type="time" class="addGap padding-n" id="timeInput" required />
         </div>
-        <input type="submit" value="Add Schedules" class="btn btn-success"/>
+        <input type="submit" value="Add Reminder" class="btn btn-success"/>
+        <input type="button" class="btn btn-danger addGap" href="#" onclick="clearAll()" value="Clear all"/>
     </div>
   </form>
   <div id="taskContainer">
