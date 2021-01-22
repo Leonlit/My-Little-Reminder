@@ -16,10 +16,25 @@ process.env.NODE_ENV = 'production';
 const DB = new DBManagement();
 const gotTheLock = app.requestSingleInstanceLock();
 
-//check if there's another application instance already opened
+//if cannot get the lock, means there's another instance running.
+//quit the new instance immediately
 if (!gotTheLock) {
-  app.quit()
+  app.quit();
 }
+
+//when another instance creation is detected, reopen the previous instance
+app.on("second-instance", (ev, argv, wd)=>{
+  if (top.win) {
+    if (!top.win.isVisible()) {
+      top.win.show();
+    }else if (top.win.isMinimized()) {
+      top.win.restore();
+    }
+    top.win.focus();
+  }
+})
+
+
 
 app.on("ready", ev => {
   top.win = new BrowserWindow({
@@ -108,6 +123,7 @@ if(process.env.NODE_ENV !== 'production'){
   });
 }
 
+//on client page load setup the available task (reminder)
 ipcMain.on("setupData", ()=>{
   allTasks = [];
   DB.getAllTask((data)=>{
