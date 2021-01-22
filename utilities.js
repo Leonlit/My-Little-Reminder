@@ -88,6 +88,21 @@ class Scheduler{
         this.#schedulerHandler.cancel();
     }
 
+    formatTimeTo12 (hour, minute) {
+        hour = Number(hour);
+        let str = "PM"
+        if (hour < 12) {
+            str = "AM"
+        }
+        if (hour > 12) {
+            hour -= 12;
+        }
+        if(hour == 0) {
+            hour = 12;
+        }
+        return `${hour}:${minute} ${str}`;
+    }
+
     scheduleTaskNotification (taskID, callback) {
         const dateObj = new Date();
         const year = dateObj.getFullYear();
@@ -98,7 +113,7 @@ class Scheduler{
         this.#schedulerHandler = new schedule.scheduleJob(date, ()=>{
             notifier.notify({
                 title: title,
-                message: `${this.#hour}:${this.#minutes}`,
+                message: this.formatTimeTo12(this.#hour,this.#minutes),
                 icon: path.join(__dirname, "/assets/logo_128.png"),
                 sound: true
             },
