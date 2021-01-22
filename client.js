@@ -37,6 +37,7 @@ ipcRenderer.on('newItemAdded', function (event, schedules) {
   addTaskIntoPage(schedules, position)
 });
 
+//triggered when clicked add reminder in the page
 function addTaskIntoPage (obj, position) {
   const item = document.createElement("div");
   const title = document.createElement("div");
@@ -45,7 +46,7 @@ function addTaskIntoPage (obj, position) {
   const timeHolder = document.createElement("span");
   const editIcon = document.createElement("i");
   const deleteIcon = document.createElement("i");
-
+  
   editIcon.classList = "fa fa-pencil editBtn";
   deleteIcon.classList = "fa fa-close closeBtn";
   itemFooter.classList = "itemFooter";
@@ -71,9 +72,12 @@ function addTaskIntoPage (obj, position) {
   item.appendChild(title);
   item.appendChild(itemFooter);
   if (obj.status == 1) {
-    item.classList.add("itemNotified");
+    //just in case the user entered a time where its already pass that time
+    item.classList.toggle("itemNotified");
   }
 
+  //if its placed at the last, just append it to the container
+  //if its not, just place it before an child node in the container
   if (position === null) {
     container.appendChild(item);
   }else {
@@ -85,13 +89,12 @@ function deleteTask (ID) {
   ipcRenderer.send("deleteData", ID);
 }
 
+//remove the item from the client list when the item is deleted from the database
 ipcRenderer.on('deletedTaskInDB', (event, taskID) => {
     deleteTaskFromPage(taskID)
     const position = getTaskPositionFromID(taskID);
-    console.log("position" + position);
     if (position > -1) {
         allTasks.splice(position, 1);
-        console.log(allTasks);
     }
 });
 
@@ -109,32 +112,38 @@ ipcRenderer.on("updatedTaskInDB", (event, taskObj)=>{
   console.log("test: " + taskObj.taskID);
 })
 
+//finding the position of an item from an array using its object id
 function getTaskPositionFromID (id) {
   let result = -1;
   allTasks.forEach((element, index) => {
     if (element.taskID == id) {
-      console.log("found" + id);
       result = index;
     }
   });
   return result;
 }
 
+//event triggered when certain event has been notified to the user
 ipcRenderer.on("notifiedTask", (event, taskID) => {
   notifiedTask(taskID);
 });
 
+//change their style to dark mode
 function notifiedTask (taskID) {
   const element = document.getElementById(taskID);
-  element.classList.add("itemNotified");
+  element.classList.toggle("itemNotified");
 }
 
+//function triggered when the pencil icon is clicked
 function editTask (id) {
   const itemCont = document.getElementById(id);
   enableTaskEditMode(itemCont);
   makeContEditable(itemCont);
 }
 
+//after user has clicked the pencil icon in an item,
+//this function will be called to change the content
+// of the item text content into editable
 function makeContEditable (itemCont) {
   const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
   titleCont.contentEditable = "true";
@@ -142,6 +151,8 @@ function makeContEditable (itemCont) {
   timeCont.contentEditable = "true";
 }
 
+//when the user cancelled the editing mode, we need to make the
+//item text field to be non-editable
 function makeContNotEditable (itemCont) {
   const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
   titleCont.contentEditable = "false";
@@ -149,30 +160,37 @@ function makeContNotEditable (itemCont) {
   timeCont.contentEditable = "false";
 }
 
+//made this as a function as repeated too many times
 function getItemTitleAndTimeCont (itemCont) {
   const titleCont = itemCont.getElementsByClassName("itemTitle")[0];
   const timeCont = itemCont.getElementsByTagName("span")[0];
   return {titleCont, timeCont};
 }
 
+//selecting the pencil and cross icon
+//also made this into a function to keep it dry
+//although there's still alot of spaghetti code
 function getEditAndDeleteIconCont(itemCont) {
   const editIcon = itemCont.getElementsByClassName("editBtn")[0];
   const delIcon = itemCont.getElementsByClassName("closeBtn")[0];
   return {editIcon, delIcon};
 }
 
+//when user cancels the editing process, reset the values
 function resetContContent (itemCont, title, time) {
   const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
   titleCont.textContent = title;
   timeCont.textContent = time;
 }
 
+//when the pencil icon is clicked, enable the item to
+//be in edit mode
 function enableTaskEditMode (itemCont) {
   const {editIcon, delIcon} = getEditAndDeleteIconCont(itemCont);
   const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
 
-  editIcon.classList.remove("fa-pencil");
-  editIcon.classList.add("fa-check");
+  editIcon.classList.toggle("fa-pencil");
+  editIcon.classList.toggle("fa-check");
   const ori_title = titleCont.textContent;
   const ori_time = timeCont.textContent;
 
@@ -203,13 +221,14 @@ function enableTaskEditMode (itemCont) {
   });
 }
 
+//when user cancelled the edit during editing mode
 function disableTaskEditMode (itemCont, ori_title, ori_time) {
   const position = getTaskPositionFromID(itemCont.id);
   makeContNotEditable(itemCont);
   resetContContent(itemCont, ori_title, ori_time);
   const {editIcon, delIcon} = getEditAndDeleteIconCont(itemCont);
-  editIcon.classList.remove("fa-check");
-  editIcon.classList.add("fa-pencil");
+  editIcon.classList.toggle("fa-check");
+  editIcon.classList.toggle("fa-pencil");
 
   const editClone = editIcon.cloneNode(true);
   const delClone = delIcon.cloneNode(true);
@@ -224,6 +243,8 @@ function disableTaskEditMode (itemCont, ori_title, ori_time) {
   });
 }
 
+//checking for the validation on the time format
+// HH:MM Period
 function checkTimeValidity (timeString) {
   const timeArr = timeString.split(":");
   const secondSection = timeArr[1].split(" ");
@@ -246,6 +267,9 @@ function checkTimeValidity (timeString) {
   return false;
 }
 
+//formatting the time from 12-hour format to 24
+//this is needed because during the editing of an
+//item in the page
 function formatTimeToFormat_24_Hour (hour, minute, timePeriod) {
   if (timePeriod.toLowerCase() == "pm") {
     if (hour < 12 ) {
@@ -281,6 +305,7 @@ function clearFormField() {
   timeInputField.value="";
 }
 
+//getting the current date with the format of yyyy-mm-dd
 function getDate(dateObj=null) {
   let today = new Date();
   if (dateObj) {
@@ -296,21 +321,26 @@ function updateArrayItemPosition (taskArr) {
   taskArr.sort(compareObjectByTime)
 }
 
+//finding the position for the newly created item
+//this function will return null if it should be placed at the last position in the list
 function getPositionForBiggerValue(obj, arr) {
   let position;
   for (let index = 0; index < arr.length;index++) {
     const arrObj = arr[index];
     const result = compareObjectByTime (obj, arrObj);
     if (result == -1) {
-      console.log(index + " matched positon");
       position = index - 1;
       break;
     }
   }
-  console.log("position" + position);
   return position == undefined ? null: position ;
 }
 
+//the value returned will be corresponding to its placement
+//later on. -1 will means that the current item will be placed before 
+//the next value. While, 1 will indicates that the current item should
+//swap places with the next item (higher index number). Then, if the returned value
+//is 0, leave them unchanged
 function compareObjectByTime (obj, obj2) {
   const obj_H = obj.taskTime[0];
   const obj2_H = obj2.taskTime[0];
@@ -341,6 +371,9 @@ function getTimeFrom_24_format (timeArr) {
   if (hour > 12) {
     hour -= 12;
   }
+  //set hour to 12 to the hour if the hour is equal to zero, this is created
+  //so that in the case where in 24-hour format, the hour is equal to 0 while its Am,
+  //since we don't want to show user 0, we need to change it to 12 
   if(hour == 0) {
     hour = 12;
   }
