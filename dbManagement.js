@@ -91,7 +91,7 @@ class DBManagement {
                         console.log(`could not get last inserted ID from DB, ${err}`);
                     }else {
                         const timeArr = time.split(":");
-                        callback({taskID: ID["LAST_INSERT_ROWID()"], taskTitle: title, taskTime: time, taskStatus: 0}, timeArr);
+                        callback({taskID: ID["LAST_INSERT_ROWID()"], taskTitle: title, taskTime: time}, timeArr);
                     }
                 })
             }
