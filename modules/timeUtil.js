@@ -70,12 +70,11 @@ function formatTimeToFormat_24_Hour (hour, minute, timePeriod) {
 }
 
 function isTimeValid(hour, minute) {
-    console.log(hour, minute);
     return (((hour.length > 0 && hour.length < 3) && (minute.length > 0 && minute.length < 3)) &&
-    (testNumeric(hour) && testNumeric(minute)))
+    (testPositiveNumeric(hour) && testPositiveNumeric(minute)))
 }
 
-function testNumeric (value) {
+function testPositiveNumeric (value) {
     return /^\d+$/.test(value);
 }
 
@@ -89,5 +88,7 @@ module.exports = {
     formatTimeToFormat_24_Hour,
     getTimeFrom_24_format,
     checkTimeValidity,
-    getDate
+    getDate,
+    isTimeValid,
+    testPositiveNumeric
 }

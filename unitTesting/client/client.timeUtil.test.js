@@ -3,7 +3,9 @@ const {
     formatTimeToFormat_24_Hour,
     getTimeFrom_24_format,
     checkTimeValidity,
-    getDate
+    getDate,
+    isTimeValid,
+    testPositiveNumeric
 } = require("../../modules/timeUtil.js");
 
 //
@@ -67,7 +69,8 @@ test("Formatting time from 12-hour format to 24-hour format working", ()=>{
 });
 
 test("Getting time from 24-hour format to 12-hour format working", ()=>{
-    expect(getTimeFrom_24_format(["00","00"])).toBe("12:00 AM");     //morning
+    expect(getTimeFrom_24_format(["00","00"])).toBe("12:00 AM");     //another splendid day
+    expect(getTimeFrom_24_format(["6","24"])).toBe("6:24 AM");     //morning
     expect(getTimeFrom_24_format(["12","00"])).toBe("12:00 PM");     //afternoon
     expect(getTimeFrom_24_format(["17","10"])).toBe("5:10 PM");      //evening
     expect(getTimeFrom_24_format(["23","23"])).toBe("11:23 PM");     //night
@@ -92,3 +95,25 @@ test("Date function return correct date format yyyy-mm-dd", ()=>{
     expect(dateSection[1]).toMatch(/[1-11]/);
     expect(dateSection[2]).toMatch(/[1-31]/);
 });
+
+test("Time validation working correctly", ()=>{
+    expect(isTimeValid("00","00")).toBeTruthy();
+    expect(isTimeValid("6","24")).toBeTruthy();  
+    expect(isTimeValid("12","00")).toBeTruthy();
+    expect(isTimeValid("17","10")).toBeTruthy(); 
+    expect(isTimeValid("23","23")).toBeTruthy();
+    expect(isTimeValid("ss","ss")).toBeFalsy();
+    expect(isTimeValid("11","111")).toBeFalsy();
+    expect(isTimeValid("111","11")).toBeFalsy(); 
+});
+
+test("Validation for numeric value working correctly",()=>{
+    expect(testPositiveNumeric("00")).toBeTruthy();
+    expect(testPositiveNumeric("12")).toBeTruthy();
+    expect(testPositiveNumeric("6")).toBeTruthy();
+    expect(testPositiveNumeric("-1")).toBeFalsy();
+    expect(testPositiveNumeric("1s")).toBeFalsy();
+    expect(testPositiveNumeric("s")).toBeFalsy();
+    expect(testPositiveNumeric("s0")).toBeFalsy();
+    expect(testPositiveNumeric("ss")).toBeFalsy();
+})
