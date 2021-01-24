@@ -138,7 +138,6 @@ ipcMain.on("setupData", () => {
         const obj = new Task(row, itemNotified);
         allTasks.push(obj); //here the time is in string
         const time = row.taskTime;
-        console.log(time);
         row.taskTime = time.split(":");
         });
         data = insertStatusIntoObject(data, allTasks);
@@ -223,7 +222,6 @@ function checkIfTaskExists(taskID) {
 }
 
 ipcMain.on("updateItem", (e, taskID, newTitle, newTime) => {
-    console.log(newTime)
     if (checkIfTaskExists(taskID)) {
         DB.updateTaskInfo(
         { taskID: taskID, taskTime: newTime, taskTitle: newTitle },
