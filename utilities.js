@@ -120,7 +120,6 @@ class Scheduler{
                 callback(taskID)
             );
         });
-        console.log("created the scheduler...");
     }
 }
 

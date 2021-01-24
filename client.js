@@ -49,6 +49,7 @@ ipcRenderer.on('newItemAdded', function (event, schedules) {
 
 //triggered when clicked add reminder in the page
 function addTaskIntoPage (obj, position) {
+    console.log(obj.taskTime);
     const item = document.createElement("div");
     const title = document.createElement("div");
     const time = getTimeFrom_24_format(obj.taskTime);
@@ -196,16 +197,18 @@ const position = getTaskPositionFromID(itemCont.id, allTasks);
     editClone.addEventListener("click", ()=>{
         const title = titleCont.textContent;
         const timeValidity = checkTimeValidity(timeCont.textContent);
+        console.log(timeCont.textContent);
         let time_24_hFormat;
         if (timeValidity) {
-        time_24_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
-        try {
-            allTasks.splice(position, 1);
-        }catch (ex) {
-            console.log(ex);
-        }
-        ipcRenderer.send("updateItem", Number(itemCont.id) ,title, time_24_hFormat);
-        deleteTaskFromPage(itemCont.id);
+            time_24_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
+            console.log(time_24_hFormat);
+            try {
+                allTasks.splice(position, 1);
+            }catch (ex) {
+                console.log(ex);
+            }
+            ipcRenderer.send("updateItem", Number(itemCont.id) ,title, time_24_hFormat);
+            deleteTaskFromPage(itemCont.id);
         }
     })
     delClone.addEventListener("click", ()=>{

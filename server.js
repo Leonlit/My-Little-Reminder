@@ -138,6 +138,7 @@ ipcMain.on("setupData", () => {
         const obj = new Task(row, itemNotified);
         allTasks.push(obj); //here the time is in string
         const time = row.taskTime;
+        console.log(time);
         row.taskTime = time.split(":");
         });
         data = insertStatusIntoObject(data, allTasks);
@@ -193,7 +194,6 @@ ipcMain.on("deleteData", (e, taskID) => {
     if (checkIfTaskExists(taskID)) {
         DB.deleteTask(taskID, () => {
         cancelScedulerInArray(allTasks, taskID);
-        console.log("server side:" + allTasks);
         top.win.webContents.send("deletedTaskInDB", taskID);
         });
     }
@@ -223,10 +223,10 @@ function checkIfTaskExists(taskID) {
 }
 
 ipcMain.on("updateItem", (e, taskID, newTitle, newTime) => {
+    console.log(newTime)
     if (checkIfTaskExists(taskID)) {
-        const _24_H_format = newTime.substring(0, 5);
         DB.updateTaskInfo(
-        { taskID: taskID, taskTime: _24_H_format, taskTitle: newTitle },
+        { taskID: taskID, taskTime: newTime, taskTitle: newTitle },
         (taskObj) => {
             cancelScedulerInArray(allTasks, taskID);
             createNewTaskObject(

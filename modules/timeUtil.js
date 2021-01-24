@@ -7,13 +7,13 @@ function checkTimeValidity (timeString) {
     const secondSection = timeArr[1];
     const hour = timeArr[0];
     if (hour && secondSection) {
-        const minute = secondSection.substring(0, secondSection.indexOf(/[PpAa]/));
+        const minute = secondSection.substring(0, 2);
         const timePeriod = secondSection.substring(2, secondSection.length);
         const isPeriodValid = checkTimePeriodValidity(timePeriod);
         if (!(minute.length > 2 || hour.length > 2 || minute > 59 ||
             hour > 12 || hour < 1 || minute < 0)) {
             if (isPeriodValid) {
-                return {hour, minute, timePeriod};
+                return {"hour": hour, "minute": minute, "timePeriod": timePeriod.toUpperCase()};
             }
         }
     }

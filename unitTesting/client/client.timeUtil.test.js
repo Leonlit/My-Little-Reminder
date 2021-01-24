@@ -28,13 +28,21 @@ test("Time validaton algorithm working correctly.", ()=>{
 
     const validPM = "11:12pm";
     const validAM = "11:12am";
+    const validWithSpacePM = "11:12 pm";
+    const validWithSpaceAM = "11:12 am";
+    const validCapsPM = "11:12 PM";
+    const validCapsAM = "11:12 AM";
     const validPeriodWithSpacesPM = "11 : 12 pm";
-    const validPeriodWithSpacesAM = "11 : 12 pm";
+    const validPeriodWithSpacesAM = "11 : 12 am";
 
-    expect(checkTimeValidity(validPM)).toBeTruthy();
-    expect(checkTimeValidity(validAM)).toBeTruthy();
-    expect(checkTimeValidity(validPeriodWithSpacesPM)).toBeTruthy();
-    expect(checkTimeValidity(validPeriodWithSpacesAM)).toBeTruthy();
+    expect(checkTimeValidity(validPM)).toEqual({"hour": "11", "minute": "12", "timePeriod": "PM"});
+    expect(checkTimeValidity(validAM)).toEqual({"hour": "11", "minute": "12", "timePeriod": "AM"});
+    expect(checkTimeValidity(validWithSpacePM)).toEqual({"hour": "11", "minute": "12", "timePeriod": "PM"});
+    expect(checkTimeValidity(validWithSpaceAM)).toEqual({"hour": "11", "minute": "12", "timePeriod": "AM"});
+    expect(checkTimeValidity(validCapsPM)).toEqual({"hour": "11", "minute": "12", "timePeriod": "PM"});
+    expect(checkTimeValidity(validCapsAM)).toEqual({"hour": "11", "minute": "12", "timePeriod": "AM"});
+    expect(checkTimeValidity(validPeriodWithSpacesPM)).toEqual({"hour": "11", "minute": "12", "timePeriod": "PM"});
+    expect(checkTimeValidity(validPeriodWithSpacesAM)).toEqual({"hour": "11", "minute": "12", "timePeriod": "AM"});
 
     const timeInvalidTooBig = "13:21pm"
     const timeInvalidTooSmall = "-1:21pm";
@@ -55,13 +63,14 @@ test("Time validaton algorithm working correctly.", ()=>{
     const valid12PM = "12:00pm";
     const valid12AM = "12:00am";
 
-    expect(checkTimeValidity(valid12PM)).toBeTruthy();
-    expect(checkTimeValidity(valid12AM)).toBeTruthy();
+    expect(checkTimeValidity(valid12PM)).toEqual({"hour": "12", "minute": "00", "timePeriod": "PM"});
+    expect(checkTimeValidity(valid12AM)).toEqual({"hour": "12", "minute": "00", "timePeriod": "AM"});
 });
 
 test("Formatting time from 12-hour format to 24-hour format working", ()=>{
     
     expect(formatTimeToFormat_24_Hour("12", "00", "AM")).toBe("00:00");     //morning
+    expect(formatTimeToFormat_24_Hour("6", "00", "AM")).toBe("06:00");
     expect(formatTimeToFormat_24_Hour("12", "00", "PM")).toBe("12:00");     //afternoon
     expect(formatTimeToFormat_24_Hour("5", "10", "pM")).toBe("17:10");      //evening
     expect(formatTimeToFormat_24_Hour("11", "23", "pM")).toBe("23:23");     //night
