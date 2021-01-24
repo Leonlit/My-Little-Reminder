@@ -2,32 +2,27 @@
 // HH:MM Period while returning an object to the caller
 //which consists of hour, minute and period
 function checkTimeValidity (timeString) {
+    timeString = timeString.replace(/\s/g, "");
     const timeArr = timeString.split(":");
-    const secondSection = timeArr[1].split(" ");
+    const secondSection = timeArr[1];
     const hour = timeArr[0];
-    const timePeriod = secondSection[secondSection.length - 1];
-    const minute = secondSection[0];
-    const isPeriodValid = checkTimePeriodValidity(timePeriod);
-  
-    if (minute.length > 2 || hour.length > 2 || minute > 59 ||
-        hour > 12 || hour < 1 || minute < 0) {
-        alert("The time format is invalid!!! Please try again.");
-    }else {
-        if (!isPeriodValid) {
-            alert("The time period is invalid!!! Please try again.");
-        }else {
-            return {hour, minute, timePeriod};
+    if (hour && secondSection) {
+        const minute = secondSection.substring(0, secondSection.indexOf(/[PpAa]/));
+        const timePeriod = secondSection.substring(2, secondSection.length);
+        const isPeriodValid = checkTimePeriodValidity(timePeriod);
+        if (!(minute.length > 2 || hour.length > 2 || minute > 59 ||
+            hour > 12 || hour < 1 || minute < 0)) {
+            if (isPeriodValid) {
+                return {hour, minute, timePeriod};
+            }
         }
     }
     return false;
 }
 
 //getting the current date with the format of yyyy-mm-dd
-function getDate(dateObj=null) {
+function getDate() {
     let today = new Date();
-    if (dateObj) {
-      today = new Date (dateObj);
-    }
     const dd = String(today.getDate()).padStart(2, '0');
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const yyyy = today.getFullYear();
@@ -36,6 +31,9 @@ function getDate(dateObj=null) {
 
 //changing 24-hour format to a 12-hour time format
 function getTimeFrom_24_format (timeArr) {
+    if (!isTimeValid(timeArr[0], timeArr[1])) {
+        return false;
+    }
     let hour = Number(timeArr[0]);
     const minute = timeArr[1];
     let str = "PM"
@@ -58,6 +56,7 @@ function getTimeFrom_24_format (timeArr) {
 //this is needed because during the editing of an
 //item in the page
 function formatTimeToFormat_24_Hour (hour, minute, timePeriod) {
+    if (!checkTimePeriodValidity(timePeriod) || !isTimeValid(hour, minute)) return false;
     if (timePeriod.toLowerCase() == "pm") {
         if (hour < 12 ) {
             hour = Number(hour) + 12;
@@ -67,7 +66,17 @@ function formatTimeToFormat_24_Hour (hour, minute, timePeriod) {
             hour = 0;
         }
     }
-    return `${`${hour}`.padStart(2, '0')}:${minute.padStart(2, '0')} ${timePeriod.toUpperCase()}`;
+    return `${`${hour}`.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+}
+
+function isTimeValid(hour, minute) {
+    console.log(hour, minute);
+    return (((hour.length > 0 && hour.length < 3) && (minute.length > 0 && minute.length < 3)) &&
+    (testNumeric(hour) && testNumeric(minute)))
+}
+
+function testNumeric (value) {
+    return /^\d+$/.test(value);
 }
 
 function checkTimePeriodValidity (period) {
