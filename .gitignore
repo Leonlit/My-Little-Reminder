@@ -4,3 +4,4 @@ release-builds/
 test.js
 .vscode
 coverage/
+release/

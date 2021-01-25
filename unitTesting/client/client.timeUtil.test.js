@@ -6,7 +6,7 @@ const {
     getDate,
     isTimeValid,
     testPositiveNumeric
-} = require("../../modules/timeUtil.js");
+} = require("../../app/modules/timeUtil.js");
 
 //
 //  Testing time util functions in the timeUtil file

@@ -3,11 +3,11 @@ const top = {};
 const electron = require("electron");
 const path = require("path");
 const url = require("url");
-const utilities = require("./utilities.js");
-const { DBManagement } = require("./dbManagement.js");
+const utilities = require(path.join(__dirname, "server/utilities.js"));
+const { DBManagement } = require(path.join(__dirname,"server/dbManagement.js"));
 const { Task } = utilities;
 const { app, BrowserWindow, Menu, ipcMain, nativeImage, Tray } = electron;
-const iconURL = path.join(__dirname, "/assets/logo_128.png");
+const iconURL = path.join(__dirname, "assets/images/logo_128.png");
 let allTasks = [];
 
 // SET ENV development will enable the devs tools in app

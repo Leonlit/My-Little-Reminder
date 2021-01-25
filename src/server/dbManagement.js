@@ -1,10 +1,11 @@
 const sqlite3 = require('sqlite3');
+const path = require("path");
 
 class DBManagement {
     #SQLiteObj
 
     constructor () {
-        this.#SQLiteObj = new sqlite3.Database('./tasks.db', err=> {
+        this.#SQLiteObj = new sqlite3.Database(path.join(__dirname, 'tasks.db'), err=> {
             if (err) {
                 console.log("Could not connect to database", err);
             }else {

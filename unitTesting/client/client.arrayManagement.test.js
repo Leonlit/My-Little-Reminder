@@ -3,7 +3,7 @@ const {
     updateArrayItemPosition,
     getPositionForBiggerValue,
     getTaskPositionFromID,
-} = require("../../modules/arrayManagement.js");
+} = require("../../app/modules/arrayManagement.js");
 
 const dummyArray = [
     {

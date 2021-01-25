@@ -5,18 +5,19 @@
 //all position starts from zero (0)
 
 const electron = require('electron');
+const path = require("path");
 const {
     formatTimeToFormat_24_Hour,
     getTimeFrom_24_format,
     checkTimeValidity,
     getDate
-} = require("./modules/timeUtil.js");
+} = require(path.join(__dirname, "modules/timeUtil.js"));
 
 const {
     updateArrayItemPosition,
     getPositionForBiggerValue,
     getTaskPositionFromID
-} = require("./modules/arrayManagement.js");
+} = require(path.join(__dirname, "modules/arrayManagement.js"));
 
 const {ipcRenderer} = electron;
 const container = document.querySelector('#taskContainer');
