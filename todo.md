@@ -10,4 +10,3 @@
 - ~Able to read/get saved tasks~
 - ~Save created task for future use~
 - clearing whole reminder should also remove all scheduler
-- neeed to change the database to NeDB
