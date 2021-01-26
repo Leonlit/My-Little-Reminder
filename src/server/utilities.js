@@ -114,7 +114,7 @@ class Scheduler{
             notifier.notify({
                 title: title,
                 message: this.formatTimeTo12(this.#hour,this.#minutes),
-                icon: path.join(__dirname, "../assets/logo_128.png"),
+                icon: path.join(__dirname, "../assets/images/logo_128.png"),
                 sound: true
             },
                 callback(taskID)

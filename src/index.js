@@ -47,13 +47,7 @@ app.on("ready", (ev) => {
         },
         icon: iconURL,
     });
-    top.win.loadURL(
-        url.format({
-        pathname: path.join(__dirname, "index.html"),
-        protocol: "file:",
-        slashes: true,
-        })
-    );
+    top.win.loadFile(path.join(__dirname, "index.html"))
 
     //something like telegram
     top.win.on("close", (ev) => {

@@ -33,8 +33,9 @@ ipcRenderer.on('setupSchedules', function (event, schedules) {
     setupTasks(schedules);
 });
 
-//initial setup for the schedules
+//initial setup for the schedules, array need to be revered as append works by appending the first item first
 function setupTasks (schedules) {
+    schedules.reverse();
     schedules.forEach((objRow, index)=>{
         addTaskIntoPage(objRow, index);
     })
@@ -50,7 +51,6 @@ ipcRenderer.on('newItemAdded', function (event, schedules) {
 
 //triggered when clicked add reminder in the page
 function addTaskIntoPage (obj, position) {
-    console.log(obj.taskTime);
     const item = document.createElement("div");
     const title = document.createElement("div");
     const time = getTimeFrom_24_format(obj.taskTime);
@@ -202,7 +202,6 @@ const position = getTaskPositionFromID(itemCont.id, allTasks);
         let time_24_hFormat;
         if (timeValidity) {
             time_24_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
-            console.log(time_24_hFormat);
             try {
                 allTasks.splice(position, 1);
             }catch (ex) {

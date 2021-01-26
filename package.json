@@ -6,6 +6,7 @@
   "scripts": {
     "start": "electron .",
     "test": "jest --coverage",
+    "build": "electron-builder --dir",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=icons/mac/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . --overwrite --platform=win32 --prune=true --arch=x64 --icon=./icons/win/icon.ico --out=release",
     "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/icons/png/icon.png --prune=true --out=release-builds"
@@ -15,11 +16,13 @@
   "dependencies": {
     "node-notifier": ">=8.0.1",
     "node-schedule": "^1.3.2",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "electron-log": "^4.3.1"
   },
   "devDependencies": {
+    "electron": "^11.2.1",
+    "electron-builder": "^22.9.1",
     "electron-packager": "^15.2.0",
-    "jest": "^26.6.3",
-    "electron": "^11.2.1"
+    "jest": "^26.6.3"
   }
 }
