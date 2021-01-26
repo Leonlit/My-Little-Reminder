@@ -2,11 +2,12 @@
   "name": "my_little_reminder",
   "version": "0.5.0",
   "description": "A simple time reminder app",
-  "main": "src/index.js",
+  "main": "app/index.js",
   "scripts": {
     "start": "electron .",
     "test": "jest --coverage",
-    "build": "electron-builder --dir"
+    "build": "electron-builder --dir",
+    "postinstall": "electron-builder install-app-deps"
   },
   "author": "Leonlit",
   "license": "MIT",

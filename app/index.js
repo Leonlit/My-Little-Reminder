@@ -3,17 +3,18 @@ const top = {};
 const electron = require("electron");
 const path = require("path");
 const url = require("url");
-const utilities = require(path.join(__dirname, "server/utilities.js"));
-const { DBManagement } = require(path.join(__dirname,"server/dbManagement.js"));
+const utilities = require(path.join(__dirname, "./server/utilities.js"));
+const { DBManagement } = require(path.join(__dirname,"./server/dbManagement.js"));
 const { Task } = utilities;
 const { app, BrowserWindow, Menu, ipcMain, nativeImage, Tray } = electron;
-const iconURL = path.join(__dirname, "assets/images/logo_128.png");
+const dbPath = path.join(app.getPath('userData'), '/tasks.db');
+const iconICOURL = path.join(__dirname, "./assets/images/icon.ico");
 let allTasks = [];
 
 // SET ENV development will enable the devs tools in app
-process.env.NODE_ENV = "production";
+process.env.NODE_ENV = "development";
 
-const DB = new DBManagement();
+const DB = new DBManagement(dbPath);
 const gotTheLock = app.requestSingleInstanceLock();
 
 //if cannot get the lock, means there's another instance running.
@@ -45,7 +46,7 @@ app.on("ready", (ev) => {
         nodeIntegration: true,
         webSecurity: true,
         },
-        icon: iconURL,
+        icon: iconICOURL,
     });
     top.win.loadFile(path.join(__dirname, "index.html"))
 
@@ -72,9 +73,9 @@ app.on("ready", (ev) => {
         show: false,
         webPreferences: { offscreen: true },
     });
-    top.icons.loadFile("");
+    top.icons.loadFile(iconICOURL);
     top.icons.webContents.on("paint", (event, dirty, image) => {
-        if (top.tray) top.tray.setImage(iconURL);
+        if (top.tray) top.tray.setImage(iconICOURL);
     });
 
     const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);

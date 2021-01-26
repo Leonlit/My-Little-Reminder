@@ -11,13 +11,13 @@ const {
     getTimeFrom_24_format,
     checkTimeValidity,
     getDate
-} = require(path.join(__dirname, "modules/timeUtil.js"));
+} = require(path.join(__dirname, "./modules/timeUtil.js"));
 
 const {
     updateArrayItemPosition,
     getPositionForBiggerValue,
     getTaskPositionFromID
-} = require(path.join(__dirname, "modules/arrayManagement.js"));
+} = require(path.join(__dirname, "./modules/arrayManagement.js"));
 
 const {ipcRenderer} = electron;
 const container = document.querySelector('#taskContainer');
