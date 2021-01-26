@@ -5,7 +5,8 @@
 - ~hide and show window~
 - ~Able to delete task that’s done~
 - ~Able to create new task~
-- Able to edit old task
-- delete all tasks from previous date
+- ~Able to edit old task~
+- ~delete all tasks from previous date~
 - ~Able to read/get saved tasks~
 - ~Save created task for future use~
+- clearing whole reminder should also remove all scheduler

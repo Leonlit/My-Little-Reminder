@@ -2,3 +2,6 @@ node_modules/
 tasks.db
 release-builds/
 test.js
+.vscode
+coverage/
+dist/

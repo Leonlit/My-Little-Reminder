@@ -3,8 +3,8 @@ const sqlite3 = require('sqlite3');
 class DBManagement {
     #SQLiteObj
 
-    constructor () {
-        this.#SQLiteObj = new sqlite3.Database('./tasks.db', err=> {
+    constructor (path) {
+        this.#SQLiteObj = new sqlite3.Database(path, err=> {
             if (err) {
                 console.log("Could not connect to database", err);
             }else {
@@ -101,7 +101,7 @@ class DBManagement {
 
     updateTaskInfo(taskObj, callback) {
         const query = `UPDATE TASKS SET taskTitle=?, taskTime=? WHERE taskID=?`;
-        this.#SQLiteObj.run(query, [taskObj.taskTitle, taskObj.taskTime.trim(), taskObj.taskID], err=> {
+        this.#SQLiteObj.run(query, [taskObj.taskTitle, taskObj.taskTime, taskObj.taskID], err=> {
             if (err) {
                 console.log(`could not insert task info into database, ${err}`);
             }else {
