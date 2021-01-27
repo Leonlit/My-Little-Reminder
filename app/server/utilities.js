@@ -116,7 +116,6 @@ class Scheduler{
                 title: title,
                 message: "Notification for " + title,
                 appID: "My Little Reminder",
-                contentImage: iconPath,
                 icon: iconPath,
                 sound: true
             },
