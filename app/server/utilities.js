@@ -1,6 +1,7 @@
 const notifier = require('node-notifier');
 const schedule = require('node-schedule');
 const path = require('path');
+const iconPath = path.join(__dirname, "../assets/images/logo_128.png");
 
 class Task{
     #taskID
@@ -113,8 +114,9 @@ class Scheduler{
         this.#schedulerHandler = new schedule.scheduleJob(date, ()=>{
             notifier.notify({
                 title: title,
-                message: this.formatTimeTo12(this.#hour,this.#minutes),
-                icon: path.join(__dirname, "../assets/images/logo_128.png"),
+                message: "Notification for " + title,
+                appID: "My Little Reminder",
+                icon: iconPath,
                 sound: true
             },
                 callback(taskID)
