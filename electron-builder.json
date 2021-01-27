@@ -9,7 +9,8 @@
     "files": [
         "package.json",
         "app/**/*",
-        "node_modules"
+        "node_modules",
+        "uniTesting/**/*"
     ],
     "dmg": {
         "background": null,
