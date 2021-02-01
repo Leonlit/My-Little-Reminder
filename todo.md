@@ -1,3 +1,5 @@
+# prototype
+
 - ~Notification system that works no matter offline or online~
 - ~make new scheduler~
 - ~delete scheduler~
@@ -10,3 +12,13 @@
 - ~Able to read/get saved tasks~
 - ~Save created task for future use~
 - clearing whole reminder should also remove all scheduler
+
+
+### version 1.0
+
+- Full test covered
+- Fix variable naming
+- Error checking & security
+- Informing error to users
+- Element's animations
+- 
