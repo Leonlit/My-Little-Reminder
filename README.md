@@ -1,5 +1,5 @@
 # My-Little-Reminder
-A simple task reminder using electronjs, sqlite3, node-scheduler, node-notifier. The application can be downloaded and used as an regular desktop app.
+A simple task reminder using [electronjs](https://www.npmjs.com/package/electron), [sqlite3](https://www.npmjs.com/package/sqlite3), [node-scheduler](https://www.npmjs.com/package/node-schedule), and [node-notifier](https://www.npmjs.com/package/node-notifier). The application can be downloaded and used as an regular desktop app.
 
 User will be able to use it as a simple reminder app. The app can be minimized or hide (something similar to telegram on desktop). When, the time is up for a reminder, a notification will be fired and a pop-up will appear on user screen (given they didn't disable the notification on their machine).
 
