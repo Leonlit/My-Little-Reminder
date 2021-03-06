@@ -17,10 +17,10 @@ class DBManagement {
     makeSureTableIsPresent () {
         const query = `
             CREATE TABLE IF NOT EXISTS TASKS (
-                taskID INTEGER PRIMARY KEY AUTOINCREMENT,
-                taskTitle TEXT NOT NULL,
-                taskTime TEXT NOT NULL,
-                taskDate TEXT NOT NUll
+                reminderID INTEGER PRIMARY KEY AUTOINCREMENT,
+                reminderTitle TEXT NOT NULL,
+                reminderTime TEXT NOT NULL,
+                reminderDate TEXT NOT NUll
             )
         `;
         try {
@@ -30,18 +30,18 @@ class DBManagement {
                 }else {
                     console.log("table for database created or already exists");
                 }
-                this.clearPreviousDateTask();
+                this.clearPreviousDateReminder();
             });
         } catch (error) {
             console.log(error);
         }
     }
 
-    clearPreviousDateTask () {
-        const query = `DELETE FROM TASKS WHERE taskDate < Date("now")`;
+    clearPreviousDateReminder () {
+        const query = `DELETE FROM TASKS WHERE reminderDate < Date("now")`;
         this.#SQLiteObj.run(query, function(err) {
             if (err) {
-                console.log(`Error occured when deleting task created on previous date.`);
+                console.log(`Error occured when deleting reminder created on previous date.`);
                 return false;
             }else {
                 if (this.changes > 0) {
@@ -67,7 +67,7 @@ class DBManagement {
         })
     }
 
-    getAllTask (callback) {
+    getAllReminder (callback) {
         const query = `SELECT * FROM TASKS`;
         this.#SQLiteObj.all(query, (err, row)=>  {
             if (err) {
@@ -79,19 +79,19 @@ class DBManagement {
         })
     }
 
-    insertTask (title, time, date, callback) {
-        const query = `INSERT INTO TASKS (taskTitle, taskTime, taskDate) VALUES (?, ?, ?)`;
+    insertReminder (title, time, date, callback) {
+        const query = `INSERT INTO TASKS (reminderTitle, reminderTime, reminderDate) VALUES (?, ?, ?)`;
         this.#SQLiteObj.run(query, [title, time, date], err=> {
             if (err) {
-                console.log(`could not insert task info into database, ${err}`);
+                console.log(`could not insert reminder info into database, ${err}`);
             }else {
-                console.log("succesfully inserted task into database");
+                console.log("succesfully inserted reminder into database");
                 this.#SQLiteObj.get("SELECT LAST_INSERT_ROWID()",(err, ID)=>{
                     if (err) {
                         console.log(`could not get last inserted ID from DB, ${err}`);
                     }else {
                         const timeArr = time.split(":");
-                        callback({taskID: ID["LAST_INSERT_ROWID()"], taskTitle: title, taskTime: time}, timeArr);
+                        callback({reminderID: ID["LAST_INSERT_ROWID()"], reminderTitle: title, reminderTime: time}, timeArr);
                     }
                 })
             }
@@ -99,26 +99,26 @@ class DBManagement {
         })
     }
 
-    updateTaskInfo(taskObj, callback) {
-        const query = `UPDATE TASKS SET taskTitle=?, taskTime=? WHERE taskID=?`;
-        this.#SQLiteObj.run(query, [taskObj.taskTitle, taskObj.taskTime, taskObj.taskID], err=> {
+    updateReminderInfo(reminderObj, callback) {
+        const query = `UPDATE TASKS SET reminderTitle=?, reminderTime=? WHERE reminderID=?`;
+        this.#SQLiteObj.run(query, [reminderObj.reminderTitle, reminderObj.reminderTime, reminderObj.reminderID], err=> {
             if (err) {
-                console.log(`could not insert task info into database, ${err}`);
+                console.log(`could not insert reminder info into database, ${err}`);
             }else {
-                console.log("succesfully updated task info in database.");
-                callback(taskObj)
+                console.log("succesfully updated reminder info in database.");
+                callback(reminderObj)
             }
             return false;
         })
     }
 
-    deleteTask(taskID, callback) {
-        const query = `DELETE FROM TASKS WHERE taskID=?`;
-        this.#SQLiteObj.run(query, [taskID], function (err) {
+    deleteReminder(reminderID, callback) {
+        const query = `DELETE FROM TASKS WHERE reminderID=?`;
+        this.#SQLiteObj.run(query, [reminderID], function (err) {
             if (err) {
-                console.log(`could not delete task from database, ${err}`);
+                console.log(`could not delete reminder from database, ${err}`);
             }else if (this.changes == 1){
-                console.log("succesfully deleted task from database.");
+                console.log("succesfully deleted reminder from database.");
                 callback();
                 return true;
             }else {

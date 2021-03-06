@@ -2,45 +2,45 @@ const {
     compareObjectByTime,
     updateArrayItemPosition,
     getPositionForBiggerValue,
-    getTaskPositionFromID,
+    getReminderPositionFromID,
 } = require("../../app/modules/arrayManagement.js");
 
 const dummyArray = [
     {
         status: 0,
-        taskID: 88,
-        taskTime: ["6", "23"],
-        taskTitle: "firstDummy"
+        reminderID: 88,
+        reminderTime: ["6", "23"],
+        reminderTitle: "firstDummy"
     }, {
         status: 1,
-        taskID: 105,
-        taskTime: ["10", "22"],
-        taskTitle: "secondDummy"
+        reminderID: 105,
+        reminderTime: ["10", "22"],
+        reminderTitle: "secondDummy"
     }, {
         status: 1,
-        taskID: 106,
-        taskTime: ["10", "23"],
-        taskTitle: "secondDummy"
+        reminderID: 106,
+        reminderTime: ["10", "23"],
+        reminderTitle: "secondDummy"
     }, {
         status: 1,
-        taskID: 107,
-        taskTime: ["10", "24"],
-        taskTitle: "secondDummy"
+        reminderID: 107,
+        reminderTime: ["10", "24"],
+        reminderTitle: "secondDummy"
     }, {
         status: 1,
-        taskID: 99,
-        taskTime: ["12", "23"],
-        taskTitle: "thirdDummy"
+        reminderID: 99,
+        reminderTime: ["12", "23"],
+        reminderTitle: "thirdDummy"
     }, {
         status: 0,
-        taskID: 102,
-        taskTime: ["13", "23"],
-        taskTitle: "fourthDummy"
+        reminderID: 102,
+        reminderTime: ["13", "23"],
+        reminderTitle: "fourthDummy"
     }, {
         status: 0,
-        taskID: 104,
-        taskTime: ["18", "23"],
-        taskTitle: "fifthDummy"
+        reminderID: 104,
+        reminderTime: ["18", "23"],
+        reminderTitle: "fifthDummy"
     }
 ]
 
@@ -58,7 +58,7 @@ function shuffle(arr) {
 //
 //     compareObjectByTime
 //     updateArrayItemPosition
-//     getTaskPositionFromID
+//     getReminderPositionFromID
 //     getPositionForBiggerValue
 
 test("Array sorting algorithm is working correctly", ()=>{
@@ -72,29 +72,29 @@ test("Array rearrangement function working correctly", () => {
 });
 
 test("Finding the position from item id", () => {
-    expect(getTaskPositionFromID(99, dummyArray)).toBe(4);
-    expect(getTaskPositionFromID(104, dummyArray)).toBe(6);
-    expect(getTaskPositionFromID(106, dummyArray)).toBe(2);
+    expect(getReminderPositionFromID(99, dummyArray)).toBe(4);
+    expect(getReminderPositionFromID(104, dummyArray)).toBe(6);
+    expect(getReminderPositionFromID(106, dummyArray)).toBe(2);
 });
 
 test("Getting position for value with bigger value", () => {
     const firstObject = {
         status: 0,
-        taskID: 1,
-        taskTime: ["5", "23"],
-        taskTitle: "firstObject"
+        reminderID: 1,
+        reminderTime: ["5", "23"],
+        reminderTitle: "firstObject"
     }
     const middleObject = {
         status: 0,
-        taskID: 14,
-        taskTime: ["11", "23"],
-        taskTitle: "MiddleObject"
+        reminderID: 14,
+        reminderTime: ["11", "23"],
+        reminderTitle: "MiddleObject"
     };
     const lastObject = {
         status: 0,
-        taskID: 1,
-        taskTime: ["19", "23"],
-        taskTitle: "lastObject"
+        reminderID: 1,
+        reminderTime: ["19", "23"],
+        reminderTitle: "lastObject"
     }
     expect(getPositionForBiggerValue(firstObject, dummyArray)).toBe(0);
     expect(getPositionForBiggerValue(middleObject, dummyArray)).toBe(4);

@@ -3,8 +3,8 @@ const schedule = require('node-schedule');
 const path = require('path');
 const iconPath = path.join(__dirname, "../assets/images/logo_128.png");
 
-class Task{
-    #taskID
+class Reminder{
+    #reminderID
     #time
     #title
     #hour
@@ -13,10 +13,10 @@ class Task{
     #status
     #callBack
 
-    constructor ( {taskID,  taskTitle, taskTime}, callback) {
-        this.#taskID = taskID;
-        this.#title = taskTitle;
-        this.#time = taskTime;
+    constructor ( {reminderID,  reminderTitle, reminderTime}, callback) {
+        this.#reminderID = reminderID;
+        this.#title = reminderTitle;
+        this.#time = reminderTime;
         this.#status  = 1;
         this.#callBack = callback;
         this.updateTimeStructure();
@@ -36,12 +36,12 @@ class Task{
         this.#scheduler = null;
         this.#scheduler = new Scheduler(this.#title, this.#hour, 
                         this.#minutes, this.#time);
-        this.#scheduler.scheduleTaskNotification(this.#taskID, this.#callBack);
+        this.#scheduler.scheduleReminderNotification(this.#reminderID, this.#callBack);
     }
 
-    cancelTaskScheduled() {
+    cancelReminderScheduled() {
         if (this.#scheduler != undefined) {
-            this.#scheduler.cancelTaskScheduler();
+            this.#scheduler.cancelReminderScheduler();
         }
     }
 
@@ -50,14 +50,14 @@ class Task{
     }
 
     getDB_ID () {
-        return this.#taskID;
+        return this.#reminderID;
     }
 
     getStatus () {
         return this.#status;
     }
 
-    setTaskNotified () {
+    setReminderNotified () {
         this.#status = 1;
     }
 
@@ -85,7 +85,7 @@ class Scheduler{
         this.#minutes = newMinutes;
     }
 
-    cancelTaskScheduler () {
+    cancelReminderScheduler () {
         this.#schedulerHandler.cancel();
     }
 
@@ -104,7 +104,7 @@ class Scheduler{
         return `${hour}:${minute} ${str}`;
     }
 
-    scheduleTaskNotification (taskID, callback) {
+    scheduleReminderNotification (reminderID, callback) {
         const dateObj = new Date();
         const year = dateObj.getFullYear();
         const month = dateObj.getMonth();
@@ -119,10 +119,10 @@ class Scheduler{
                 icon: iconPath,
                 sound: true
             },
-                callback(taskID)
+                callback(reminderID)
             );
         });
     }
 }
 
-module.exports = {Task, Scheduler}
+module.exports = {Reminder, Scheduler}

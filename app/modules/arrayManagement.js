@@ -14,18 +14,18 @@ function getPositionForBiggerValue(obj, arr) {
 }
 
 //finding the position of an item from an array using its object id
-function getTaskPositionFromID(id, allTasks) {
+function getReminderPositionFromID(id, allReminders) {
     let result = -1;
-    allTasks.forEach((element, index) => {
-        if (element.taskID == id) {
+    allReminders.forEach((element, index) => {
+        if (element.reminderID == id) {
         result = index;
         }
     });
     return result;
 }
 
-function updateArrayItemPosition(taskArr) {
-    const tempArr = taskArr.slice();
+function updateArrayItemPosition(reminderArr) {
+    const tempArr = reminderArr.slice();
     tempArr.sort(compareObjectByTime);
     return tempArr;
 }
@@ -36,14 +36,14 @@ function updateArrayItemPosition(taskArr) {
 //swap places with the next item (higher index number). Then, if the returned value
 //is 0, leave them unchanged
 function compareObjectByTime(obj, obj2) {
-    const obj_H = Number(obj.taskTime[0]);
-    const obj2_H = Number(obj2.taskTime[0]);
+    const obj_H = Number(obj.reminderTime[0]);
+    const obj2_H = Number(obj2.reminderTime[0]);
     if (obj_H < obj2_H) {
         return -1;
     } else if (obj_H == obj2_H) {
         // if the hour is the same, sort using the minute
-        const obj_M = Number(obj.taskTime[1]);
-        const obj2_M = Number(obj2.taskTime[1]);
+        const obj_M = Number(obj.reminderTime[1]);
+        const obj2_M = Number(obj2.reminderTime[1]);
         if (obj_M < obj2_M) {
             return -1;
         } else {
@@ -57,6 +57,6 @@ function compareObjectByTime(obj, obj2) {
 module.exports = {
     updateArrayItemPosition,
     getPositionForBiggerValue,
-    getTaskPositionFromID,
+    getReminderPositionFromID,
     compareObjectByTime,
 };

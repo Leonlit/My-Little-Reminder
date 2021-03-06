@@ -2,14 +2,13 @@
 const top = {};
 const electron = require("electron");
 const path = require("path");
-const url = require("url");
 const utilities = require(path.join(__dirname, "./server/utilities.js"));
 const { DBManagement } = require(path.join(__dirname,"./server/dbManagement.js"));
-const { Task } = utilities;
+const { Reminder } = utilities;
 const { app, BrowserWindow, Menu, ipcMain, nativeImage, Tray } = electron;
-const dbPath = path.join(app.getPath('userData'), '/tasks.db');
+const dbPath = path.join(app.getPath('userData'), '/reminders.db');
 const iconICOURL = path.join(__dirname, "./assets/images/icon.ico");
-let allTasks = [];
+let allReminders = [];
 
 // SET ENV development will enable the devs tools in app
 process.env.NODE_ENV = "development";
@@ -125,17 +124,17 @@ if (process.env.NODE_ENV !== "production") {
     });
 }
 
-//on client page load setup the available task (reminder)
+//on client page load setup the available reminder (reminder)
 ipcMain.on("setupData", () => {
-    allTasks = [];
-    DB.getAllTask((data) => {
+    allReminders = [];
+    DB.getAllReminder((data) => {
         data.forEach((row) => {
-        const obj = new Task(row, itemNotified);
-        allTasks.push(obj); //here the time is in string
-        const time = row.taskTime;
-        row.taskTime = time.split(":");
+        const obj = new Reminder(row, itemNotified);
+        allReminders.push(obj); //here the time is in string
+        const time = row.reminderTime;
+        row.reminderTime = time.split(":");
         });
-        data = insertStatusIntoObject(data, allTasks);
+        data = insertStatusIntoObject(data, allReminders);
         //while the objects inside the data, the time is in array form
         top.win.webContents.send("setupSchedules", data);
     });
@@ -143,97 +142,97 @@ ipcMain.on("setupData", () => {
 
 ipcMain.on("clearAll", () => {
     DB.clearAll(() => {
-        top.win.webContents.send("allTaskCleared");
+        top.win.webContents.send("allReminderCleared");
     });
 });
 
-function clearTasksArray (taskArr) {
-    const tempArr = taskArr.slice();
+function clearRemindersArray (reminderArr) {
+    const tempArr = reminderArr.slice();
     tempArr.length = 0;
     return tempArr;
 }
 
-function insertStatusIntoObject(objArr, taskArr) {
+function insertStatusIntoObject(objArr, reminderArr) {
     objArr = objArr.slice();
-    taskArr.forEach((e, index) => {
+    reminderArr.forEach((e, index) => {
         objArr[index]["status"] = e.getStatus();
     });
     return objArr;
 }
 
 // Catch addItem
-ipcMain.on("addItem", (e, taskTitle, time, date) => {
-    DB.insertTask(taskTitle, time, date, createNewTaskObject);
+ipcMain.on("addItem", (e, reminderTitle, time, date) => {
+    DB.insertReminder(reminderTitle, time, date, createNewReminderObject);
 });
 
-function createNewTaskObject(data, timeArr) {
-    const task = new Task(data, itemNotified);
-    allTasks.push(task);
-    data.taskTime = timeArr;
-    data.status = task.getStatus();
+function createNewReminderObject(data, timeArr) {
+    const reminder = new Reminder(data, itemNotified);
+    allReminders.push(reminder);
+    data.reminderTime = timeArr;
+    data.status = reminder.getStatus();
     top.win.webContents.send("newItemAdded", data);
 }
 
-function itemNotified(taskID) {
-    changeTaskStatusToNotified(taskID);
-    top.win.webContents.send("notifiedTask", taskID);
+function itemNotified(reminderID) {
+    changeReminderStatusToNotified(reminderID);
+    top.win.webContents.send("notifiedReminder", reminderID);
 }
 
-function changeTaskStatusToNotified(taskID) {
-    const obj = getItemFromID(taskID);
-    obj.setTaskNotified();
+function changeReminderStatusToNotified(reminderID) {
+    const obj = getItemFromID(reminderID);
+    obj.setReminderNotified();
 }
 
-ipcMain.on("deleteData", (e, taskID) => {
-    if (checkIfTaskExists(taskID)) {
-        DB.deleteTask(taskID, () => {
-        cancelScedulerInArray(allTasks, taskID);
-        top.win.webContents.send("deletedTaskInDB", taskID);
+ipcMain.on("deleteData", (e, reminderID) => {
+    if (checkIfReminderExists(reminderID)) {
+        DB.deleteReminder(reminderID, () => {
+        cancelScedulerInArray(allReminders, reminderID);
+        top.win.webContents.send("deletedReminderInDB", reminderID);
         });
     }
 });
 
-function cancelScedulerInArray(arr, taskID) {
+function cancelScedulerInArray(arr, reminderID) {
     arr.forEach((element, index) => {
-        if (element.getDB_ID() == taskID) {
-        arr[index].cancelTaskScheduled();
+        if (element.getDB_ID() == reminderID) {
+        arr[index].cancelReminderScheduled();
         arr.splice(index, 1);
         }
     });
 }
 
-function getItemFromID(taskID) {
+function getItemFromID(reminderID) {
     let result;
-    allTasks.forEach((row) => {
-        if (row.getDB_ID() == taskID) result = row;
+    allReminders.forEach((row) => {
+        if (row.getDB_ID() == reminderID) result = row;
     });
     return result;
 }
 
-function checkIfTaskExists(taskID) {
-  const item = getItemFromID(taskID);
+function checkIfReminderExists(reminderID) {
+  const item = getItemFromID(reminderID);
 
   return !item ? false : true;
 }
 
-ipcMain.on("updateItem", (e, taskID, newTitle, newTime) => {
-    if (checkIfTaskExists(taskID)) {
-        DB.updateTaskInfo(
-        { taskID: taskID, taskTime: newTime, taskTitle: newTitle },
-        (taskObj) => {
-            cancelScedulerInArray(allTasks, taskID);
-            createNewTaskObject(
-            taskObj,
+ipcMain.on("updateItem", (e, reminderID, newTitle, newTime) => {
+    if (checkIfReminderExists(reminderID)) {
+        DB.updateReminderInfo(
+        { reminderID: reminderID, reminderTime: newTime, reminderTitle: newTitle },
+        (reminderObj) => {
+            cancelScedulerInArray(allReminders, reminderID);
+            createNewReminderObject(
+            reminderObj,
             newTime.split(":")
             );
-            //printAllTaskTime(allTasks);
-            top.win.webContents.send("updatedTaskInDB", taskObj);
+            //printAllReminderTime(allReminders);
+            top.win.webContents.send("updatedReminderInDB", reminderObj);
         }
         );
     }
 });
 
-function printAllTaskTime(arr) {
+function printAllReminderTime(arr) {
     arr.forEach((element) => {
         console.log(element.getTime());
     });

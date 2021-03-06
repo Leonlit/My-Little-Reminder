@@ -16,44 +16,44 @@ const {
 const {
     updateArrayItemPosition,
     getPositionForBiggerValue,
-    getTaskPositionFromID
+    getReminderPositionFromID
 } = require(path.join(__dirname, "./modules/arrayManagement.js"));
 
 const {ipcRenderer} = electron;
-const container = document.querySelector('#taskContainer');
+const container = document.querySelector('#reminderContainer');
 ipcRenderer.send("setupData")
-let allTasks = []
+let allReminders = []
 
 const titleInputField = document.querySelector('#titleInput');
 const timeInputField = document.querySelector('#timeInput');
 
 //when the window is ready and a message is sent from server
 ipcRenderer.on('setupSchedules', function (event, schedules) {
-    allTasks = updateArrayItemPosition(schedules);
-    setupTasks(schedules);
+    allReminders = updateArrayItemPosition(schedules);
+    setupReminders(schedules);
 });
 
 //initial setup for the schedules, array need to be revered as append works by appending the first item first
-function setupTasks (schedules) {
+function setupReminders (schedules) {
     schedules.reverse();
     schedules.forEach((objRow, index)=>{
-        addTaskIntoPage(objRow, index);
+        addReminderIntoPage(objRow, index);
     })
 }
 
 //when new item added
 ipcRenderer.on('newItemAdded', function (event, schedules) {
-    const position = getPositionForBiggerValue(schedules, allTasks);
-    allTasks.push(schedules);
-    allTasks = updateArrayItemPosition(allTasks);
-    addTaskIntoPage(schedules, position)
+    const position = getPositionForBiggerValue(schedules, allReminders);
+    allReminders.push(schedules);
+    allReminders = updateArrayItemPosition(allReminders);
+    addReminderIntoPage(schedules, position)
 });
 
 //triggered when clicked add reminder in the page
-function addTaskIntoPage (obj, position) {
+function addReminderIntoPage (obj, position) {
     const item = document.createElement("div");
     const title = document.createElement("div");
-    const time = getTimeFrom_24_format(obj.taskTime);
+    const time = getTimeFrom_24_format(obj.reminderTime);
     const itemFooter = document.createElement("div");
     const timeHolder = document.createElement("span");
     const editIcon = document.createElement("i");
@@ -65,17 +65,17 @@ function addTaskIntoPage (obj, position) {
     title.classList = "itemTitle"
 
     deleteIcon.addEventListener("click", () => {
-        deleteTask(obj.taskID);
+        deleteReminder(obj.reminderID);
     });
 
     editIcon.addEventListener("click", ()=>{
-        editTask(obj.taskID)
+        editReminder(obj.reminderID)
     });
 
     item.classList = "item";
     timeHolder.classList = "timeHolder";
-    item.setAttribute("id", obj.taskID);
-    title.innerHTML = obj.taskTitle;
+    item.setAttribute("id", obj.reminderID);
+    title.innerHTML = obj.reminderTitle;
     timeHolder.innerHTML = time;
     itemFooter.appendChild(editIcon)
     itemFooter.appendChild(deleteIcon)
@@ -97,42 +97,42 @@ function addTaskIntoPage (obj, position) {
     }
 }
 
-function deleteTask (ID) {
+function deleteReminder (ID) {
     ipcRenderer.send("deleteData", ID);
 }
 
 //remove the item from the client list when the item is deleted from the database
-ipcRenderer.on('deletedTaskInDB', (event, taskID) => {
-    deleteTaskFromPage(taskID)
-    const position = getTaskPositionFromID(taskID, allTasks);
+ipcRenderer.on('deletedReminderInDB', (event, reminderID) => {
+    deleteReminderFromPage(reminderID)
+    const position = getReminderPositionFromID(reminderID, allReminders);
     if (position > -1) {
-        allTasks.splice(position, 1);
+        allReminders.splice(position, 1);
     }
 });
 
-ipcRenderer.on("allTaskCleared", ()=>{
+ipcRenderer.on("allReminderCleared", ()=>{
     container.innerHTML = "";
 })
 
-function deleteTaskFromPage(taskID) {
-    document.getElementById(taskID).remove();
+function deleteReminderFromPage(reminderID) {
+    document.getElementById(reminderID).remove();
 }
 
 //event triggered when certain event has been notified to the user
-ipcRenderer.on("notifiedTask", (event, taskID) => {
-    notifiedTask(taskID);
+ipcRenderer.on("notifiedReminder", (event, reminderID) => {
+    notifiedReminder(reminderID);
 });
 
 //change their style to dark mode
-function notifiedTask (taskID) {
-    const element = document.getElementById(taskID);
+function notifiedReminder (reminderID) {
+    const element = document.getElementById(reminderID);
     element.classList.toggle("itemNotified");
 }
 
 //function triggered when the pencil icon is clicked
-function editTask (id) {
+function editReminder (id) {
     const itemCont = document.getElementById(id);
-    enableTaskEditMode(itemCont);
+    enableReminderEditMode(itemCont);
     makeContEditable(itemCont);
 }
 
@@ -180,7 +180,7 @@ function resetContContent (itemCont, title, time) {
 
 //when the pencil icon is clicked, enable the item to
 //be in edit mode
-function enableTaskEditMode (itemCont) {
+function enableReminderEditMode (itemCont) {
 const {editIcon, delIcon} = getEditAndDeleteIconCont(itemCont);
 const {titleCont, timeCont} = getItemTitleAndTimeCont(itemCont);
 
@@ -194,7 +194,7 @@ const delClone = delIcon.cloneNode(true);
 editIcon.parentNode.replaceChild(editClone, editIcon);
 delIcon.parentNode.replaceChild(delClone, delIcon);
 
-const position = getTaskPositionFromID(itemCont.id, allTasks);
+const position = getReminderPositionFromID(itemCont.id, allReminders);
     editClone.addEventListener("click", ()=>{
         const title = titleCont.textContent;
         const timeValidity = checkTimeValidity(timeCont.textContent);
@@ -203,22 +203,22 @@ const position = getTaskPositionFromID(itemCont.id, allTasks);
         if (timeValidity) {
             time_24_hFormat = formatTimeToFormat_24_Hour(timeValidity.hour, timeValidity.minute, timeValidity.timePeriod);
             try {
-                allTasks.splice(position, 1);
+                allReminders.splice(position, 1);
             }catch (ex) {
                 console.log(ex);
             }
             ipcRenderer.send("updateItem", Number(itemCont.id) ,title, time_24_hFormat);
-            deleteTaskFromPage(itemCont.id);
+            deleteReminderFromPage(itemCont.id);
         }
     })
     delClone.addEventListener("click", ()=>{
-        disableTaskEditMode(itemCont, ori_title, ori_time );
+        disableReminderEditMode(itemCont, ori_title, ori_time );
     });
 }
 
 //when user cancelled the edit during editing mode
-function disableTaskEditMode (itemCont, ori_title, ori_time) {
-    const position = getTaskPositionFromID(itemCont.id, allTasks);
+function disableReminderEditMode (itemCont, ori_title, ori_time) {
+    const position = getReminderPositionFromID(itemCont.id, allReminders);
     makeContNotEditable(itemCont);
     resetContContent(itemCont, ori_title, ori_time);
     const {editIcon, delIcon} = getEditAndDeleteIconCont(itemCont);
@@ -231,15 +231,15 @@ function disableTaskEditMode (itemCont, ori_title, ori_time) {
     delIcon.parentNode.replaceChild(delClone, delIcon);
 
     editClone.addEventListener("click", ()=>{
-        editTask(itemCont.id)
+        editReminder(itemCont.id)
     })
     delClone.addEventListener("click", ()=>{
-        deleteTask(itemCont.id);
+        deleteReminder(itemCont.id);
     });
 }
 
 //adding new item to database
-function addNewTaskToStorage (event) {
+function addNewReminderToStorage (event) {
     event.preventDefault();
     const date = getDate();
     ipcRenderer.send('addItem', titleInputField.value, timeInputField.value, date);

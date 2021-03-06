@@ -7,17 +7,17 @@
   <link rel="stylesheet" href="./assets/style/main.css"/>
 </head>
 <body>
-  <form class="container addGap" onsubmit="addNewTaskToStorage(event)">
+  <form class="container addGap" onsubmit="addNewReminderToStorage(event)">
     <div class="form-group">
         <div>
-          <input type="text" class="form-control" id="titleInput" autofocus placeholder="Enter the task name" required />
+          <input type="text" class="form-control" id="titleInput" autofocus placeholder="Enter the reminder name" required />
           <input type="time" class="addGap padding-n" id="timeInput" required />
         </div>
         <input type="submit" value="Add Reminder" class="btn btn-success"/>
         <input type="button" class="btn btn-danger addGap" href="#" onclick="clearAll()" value="Clear all"/>
     </div>
   </form>
-  <div id="taskContainer">
+  <div id="reminderContainer">
 
   </div>
 </body>

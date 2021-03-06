@@ -101,8 +101,8 @@ test("Date function return correct date format yyyy-mm-dd", ()=>{
     const currDate = getDate();
     const dateSection = currDate.split("-");
     expect(dateSection[0]).toMatch(/[0-9]{4}/);
-    expect(dateSection[1]).toMatch(/[1-11]/);
-    expect(dateSection[2]).toMatch(/[1-31]/);
+    expect(dateSection[1]).toMatch(/[0-1][1-9]/);
+    expect(dateSection[2]).toMatch(/[0-3][1-9]/);
 });
 
 test("Time validation working correctly", ()=>{
