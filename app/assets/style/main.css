@@ -16,6 +16,7 @@
     align-items: flex-start;
     align-content: flex-start;
     padding:5%;
+    transition: 0.5s;
 }
 
 #timeInput {
@@ -36,6 +37,7 @@
     max-height:170px;
     position: relative;
     transition: 0.3s;
+    animation: fade-in 0.3s ease-in;
 }
 
 #reminderContainer > .itemNotified {
@@ -108,4 +110,13 @@
 
 .padding-n {
     padding:2px;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
 }

@@ -111,11 +111,17 @@ ipcRenderer.on('deletedReminderInDB', (event, reminderID) => {
 });
 
 ipcRenderer.on("allReminderCleared", ()=>{
-    container.innerHTML = "";
+    container.style.opacity = "0";
+    setTimeout(() => {
+        container.innerHTML = "";
+    }, 5000);
 })
 
 function deleteReminderFromPage(reminderID) {
-    document.getElementById(reminderID).remove();
+    document.getElementById(reminderID).style.opacity = "0";
+    setTimeout(() => {
+        document.getElementById(reminderID).remove();
+    }, 3000);
 }
 
 //event triggered when certain event has been notified to the user
