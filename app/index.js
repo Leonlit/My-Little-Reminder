@@ -58,10 +58,10 @@ app.on("ready", (ev) => {
     top.tray = new Tray(nativeImage.createEmpty());
     const menu = Menu.buildFromTemplate([
         {
-        label: "Open My Little Reminder",
-        click: (item, window, event) => {
-            top.win.show();
-        },
+            label: "Open My Little Reminder",
+            click: (item, window, event) => {
+                top.win.show();
+            },
         },
         { type: "separator" },
         { role: "quit" },
@@ -129,10 +129,10 @@ ipcMain.on("setupData", () => {
     allReminders = [];
     DB.getAllReminder((data) => {
         data.forEach((row) => {
-        const obj = new Reminder(row, itemNotified);
-        allReminders.push(obj); //here the time is in string
-        const time = row.reminderTime;
-        row.reminderTime = time.split(":");
+            const obj = new Reminder(row, itemNotified);
+            allReminders.push(obj); //here the time is in string
+            const time = row.reminderTime;
+            row.reminderTime = time.split(":");
         });
         data = insertStatusIntoObject(data, allReminders);
         //while the objects inside the data, the time is in array form
@@ -141,6 +141,10 @@ ipcMain.on("setupData", () => {
 });
 
 ipcMain.on("clearAll", () => {
+    allReminders.forEach(item=>{
+        item.cancelReminderScheduled()
+    });
+    allReminders.length = 0;
     DB.clearAll(() => {
         top.win.webContents.send("allReminderCleared");
     });
