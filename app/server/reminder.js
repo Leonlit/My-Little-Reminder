@@ -3,6 +3,7 @@ const schedule = require('node-schedule');
 const path = require('path');
 const iconPath = path.join(__dirname, "../assets/images/logo_128.png");
 
+//This file is for the needed classes for the app
 class Reminder{
     #reminderID
     #time
@@ -126,3 +127,4 @@ class Scheduler{
 }
 
 module.exports = {Reminder, Scheduler}
+

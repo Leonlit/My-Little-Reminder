@@ -2,15 +2,15 @@
 const top = {};
 const electron = require("electron");
 const path = require("path");
-const utilities = require(path.join(__dirname, "./server/utilities.js"));
+const reminder = require(path.join(__dirname, "./server/reminder.js"));
 const { DBManagement } = require(path.join(__dirname,"./server/dbManagement.js"));
-const { Reminder } = utilities;
+const { Reminder } = reminder;
 const { app, BrowserWindow, Menu, ipcMain, nativeImage, Tray } = electron;
 const dbPath = path.join(app.getPath('userData'), '/reminders.db');
 const iconICOURL = path.join(__dirname, "./assets/images/icon.ico");
 let allReminders = [];
 
-// SET ENV development will enable the devs tools in app
+//setting this as development will enable the devs tools for the app
 process.env.NODE_ENV = "development";
 
 const DB = new DBManagement(dbPath);
@@ -49,7 +49,7 @@ app.on("ready", (ev) => {
     });
     top.win.loadFile(path.join(__dirname, "index.html"))
 
-    //something like telegram
+    //something like telegram where the app will be hidden instead of terminated
     top.win.on("close", (ev) => {
         ev.sender.hide();
         ev.preventDefault();
@@ -64,7 +64,7 @@ app.on("ready", (ev) => {
             },
         },
         { type: "separator" },
-        { role: "quit" },
+        { role: "quit" }, //this would terminate the app
     ]);
     top.tray.setToolTip("Open My Little Reminder");
     top.tray.setContextMenu(menu);
@@ -72,6 +72,7 @@ app.on("ready", (ev) => {
         show: false,
         webPreferences: { offscreen: true },
     });
+    //this is to load an icon for the hidden app in the taskbar
     top.icons.loadFile(iconICOURL);
     top.icons.webContents.on("paint", (event, dirty, image) => {
         if (top.tray) top.tray.setImage(iconICOURL);
@@ -140,6 +141,7 @@ ipcMain.on("setupData", () => {
     });
 });
 
+//clearing all the 
 ipcMain.on("clearAll", () => {
     allReminders.forEach(item=>{
         item.cancelReminderScheduled()
@@ -149,12 +151,6 @@ ipcMain.on("clearAll", () => {
         top.win.webContents.send("allReminderCleared");
     });
 });
-
-function clearRemindersArray (reminderArr) {
-    const tempArr = reminderArr.slice();
-    tempArr.length = 0;
-    return tempArr;
-}
 
 function insertStatusIntoObject(objArr, reminderArr) {
     objArr = objArr.slice();
@@ -169,6 +165,7 @@ ipcMain.on("addItem", (e, reminderTitle, time, date) => {
     DB.insertReminder(reminderTitle, time, date, createNewReminderObject);
 });
 
+//create new object instance for the Reminder class
 function createNewReminderObject(data, timeArr) {
     const reminder = new Reminder(data, itemNotified);
     allReminders.push(reminder);
@@ -177,16 +174,19 @@ function createNewReminderObject(data, timeArr) {
     top.win.webContents.send("newItemAdded", data);
 }
 
+//item is notified, now make the element to appear as inactive
 function itemNotified(reminderID) {
     changeReminderStatusToNotified(reminderID);
     top.win.webContents.send("notifiedReminder", reminderID);
 }
 
+//setting the status attribute in the Reminder object as notified to prevent it being activated again
 function changeReminderStatusToNotified(reminderID) {
     const obj = getItemFromID(reminderID);
     obj.setReminderNotified();
 }
 
+//catching deleteData event from the client side
 ipcMain.on("deleteData", (e, reminderID) => {
     if (checkIfReminderExists(reminderID)) {
         DB.deleteReminder(reminderID, () => {
@@ -196,6 +196,7 @@ ipcMain.on("deleteData", (e, reminderID) => {
     }
 });
 
+//canceling a Reminder's scheduler from an array
 function cancelScedulerInArray(arr, reminderID) {
     arr.forEach((element, index) => {
         if (element.getDB_ID() == reminderID) {
@@ -205,6 +206,7 @@ function cancelScedulerInArray(arr, reminderID) {
     });
 }
 
+//getting an object from the array using their database ID
 function getItemFromID(reminderID) {
     let result;
     allReminders.forEach((row) => {
@@ -229,15 +231,8 @@ ipcMain.on("updateItem", (e, reminderID, newTitle, newTime) => {
             reminderObj,
             newTime.split(":")
             );
-            //printAllReminderTime(allReminders);
             top.win.webContents.send("updatedReminderInDB", reminderObj);
         }
         );
     }
 });
-
-function printAllReminderTime(arr) {
-    arr.forEach((element) => {
-        console.log(element.getTime());
-    });
-}
