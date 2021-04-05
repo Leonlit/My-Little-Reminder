@@ -3,6 +3,8 @@ A simple task reminder using [electronjs](https://www.npmjs.com/package/electron
 
 User will be able to use it as a simple reminder app. The app can be minimized or hide (something similar to telegram on desktop). When, the time is up for a reminder, a notification will be fired and a pop-up will appear on user screen (given they didn't disable the notification on their machine).
 
+You can take a look at the demo [here](https://www.youtube.com/watch?v=aVML509MxXA)
+
 ## Screenshots
 
 ### Startup
