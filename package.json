@@ -13,7 +13,7 @@
   "author": "Leonlit",
   "license": "MIT",
   "dependencies": {
-    "node-notifier": ">=8.0.1",
+    "node-notifier": ">=9.0.1",
     "node-schedule": "^1.3.2",
     "sqlite3": "^5.0.0",
     "electron-log": "^4.3.1"
